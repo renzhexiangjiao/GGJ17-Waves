@@ -11,6 +11,7 @@ namespace PGJ002
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        public static Localization.Language lang = Localization.Language.english;
         [STAThread]
         static void Main()
         {
