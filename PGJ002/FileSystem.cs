@@ -35,6 +35,20 @@ namespace PGJ002
             }
             return res;
         }
+        public static Bitmap GetAnimFrameFromFile(string filename)
+        {
+            Bitmap res;
+            try
+            {
+                res = new Bitmap("anim/" + filename + ".png");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception found!\n" + filename + "\n" + ex.ToString());
+                res = Instance.defaultTex;
+            }
+            return res;
+        }
         public static Bitmap GetLocalizedBitmapFromFile(string filename)
         {
             Bitmap res;
@@ -81,6 +95,17 @@ namespace PGJ002
             else
             {
                 res = "--[null]--";
+            }
+            return res;
+        }
+        public static AnimatedSprite GetAnimSpriteFromFiles(string name, int frameCount)
+        {
+            AnimatedSprite res = new AnimatedSprite();
+            res.alias = name;
+            res.frames = new Bitmap[frameCount];
+            for(int i = 0; i < frameCount; i++)
+            {
+                res.frames[i] = GetAnimFrameFromFile(name + "_" + i.ToString());
             }
             return res;
         }
