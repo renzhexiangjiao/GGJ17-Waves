@@ -16,6 +16,7 @@ namespace PGJ002
         static void Main()
         {
             FileSystem.Initialize();
+            //Music.Init();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

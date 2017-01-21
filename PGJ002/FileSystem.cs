@@ -70,5 +70,19 @@ namespace PGJ002
             }
             return res;
         }
+        public static string GetMusicPath(string filename)
+        {
+            string res;
+            if (File.Exists("music/" + filename + ".wav"))
+            {
+                res = "music/" + filename + ".wav";
+                res = Path.GetFullPath(res);
+            }
+            else
+            {
+                res = "--[null]--";
+            }
+            return res;
+        }
     }
 }
