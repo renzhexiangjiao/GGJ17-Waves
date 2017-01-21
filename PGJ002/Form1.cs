@@ -43,6 +43,10 @@ namespace PGJ002
         public static bool options = false;
         public static bool ingame = false;
 
+        public static Timer waveTimer = new Timer();
+        public static int counter;
+        public static string timer;
+
         private void PlayClick()
         {
             Sound.PlayASound("click");
@@ -57,6 +61,10 @@ namespace PGJ002
                     menu = false;
                     ingame = true;
                     PlayClick();
+                    waveTimer.Interval = 1000;
+                    waveTimer.Start();
+                    waveTimer.Tick += new System.EventHandler(this.waveTimer_OnTick);
+                    this.Refresh();
                 }
                 else if (optionsbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
@@ -162,6 +170,11 @@ namespace PGJ002
                 e.Graphics.DrawImage(languageoptionb, languageoptionsrect);
                 e.Graphics.DrawImage(backbutton, backbuttonrect);
             }
+            else if(ingame == true)
+            {
+                e.Graphics.DrawString(timer, new Font(FontFamily.GenericSansSerif,
+            12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(300, 300));
+            }
         }
 
         public void RefreshAssets()
@@ -183,7 +196,17 @@ namespace PGJ002
             languageoptionb = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("currentlanguage"));
 
         }
-
+        private void waveTimer_OnTick(object sender, EventArgs e)
+        {
+            counter++;
+            if (counter % 20 == 0)
+                timer = "0:00";
+            else if (counter % 20 > 10)
+                timer = "0:0" + (20 - counter % 20).ToString();
+            else
+                timer = "0:" + (20 - counter % 20).ToString();
+            this.Refresh();
+        }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
             this.Refresh();
