@@ -93,6 +93,7 @@ namespace PGJ002
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
             this.Location = new Point(0, 0);
             this.Width = width;
             this.Height = height;
