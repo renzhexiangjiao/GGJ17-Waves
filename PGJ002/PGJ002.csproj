@@ -78,6 +78,21 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="sprites\1024x768.png" />
+    <Content Include="sprites\1280x720.png" />
+    <Content Include="sprites\1366x768.png" />
+    <Content Include="sprites\800x600.png" />
+    <Content Include="sprites\english.png" />
+    <Content Include="sprites\h1.png" />
+    <Content Include="sprites\languagelabel.png" />
+    <Content Include="sprites\optionsbutton.png" />
+    <Content Include="sprites\polski.png" />
+    <Content Include="sprites\quitbutton.png" />
+    <Content Include="sprites\resolutionlabel.png" />
+    <Content Include="sprites\startbutton.png" />
+    <Content Include="sprites\zhongwen.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
