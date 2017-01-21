@@ -12,24 +12,22 @@ namespace PGJ002
 {
     public partial class Form1 : Form
     {
-        public static Bitmap h1 = new Bitmap(FileSystem.GetBitmapFromFile("h1"));
+        public static Bitmap h1;
 
-        public static Bitmap startbutton = new Bitmap(FileSystem.GetBitmapFromFile("startbutton")); 
-        public static Bitmap optionsbutton = new Bitmap(FileSystem.GetBitmapFromFile("optionsbutton"));
-        public static Bitmap quitbutton = new Bitmap(FileSystem.GetBitmapFromFile("quitbutton"));
+        public static Bitmap startbutton;
+        public static Bitmap optionsbutton;
+        public static Bitmap quitbutton;
 
-        public static Bitmap resolutionlabel = new Bitmap(FileSystem.GetBitmapFromFile("resolutionlabel"));
-        public static Bitmap resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600"));
-        public static Bitmap resolutionoption1 = new Bitmap(FileSystem.GetBitmapFromFile("1024x768"));
-        public static Bitmap resolutionoption2 = new Bitmap(FileSystem.GetBitmapFromFile("1280x720"));
-        public static Bitmap resolutionoption3 = new Bitmap(FileSystem.GetBitmapFromFile("1366x768"));
+        public static Bitmap resolutionlabel;
+        public static Bitmap resolutionoption0;
+        public static Bitmap resolutionoption1;
+        public static Bitmap resolutionoption2;
+        public static Bitmap resolutionoption3;
 
         public static byte resolutionoption = 3;
 
-        public static Bitmap languagelabel = new Bitmap(FileSystem.GetBitmapFromFile("languagelabel"));
-        public static Bitmap languageoption0 = new Bitmap(FileSystem.GetBitmapFromFile("polski"));
-        public static Bitmap languageoption1 = new Bitmap(FileSystem.GetBitmapFromFile("english"));
-        public static Bitmap languageoption2 = new Bitmap(FileSystem.GetBitmapFromFile("zhongwen"));
+        public static Bitmap languagelabel;
+        public static Bitmap languageoptionb;
 
         public static byte languageoption = 1;
 
@@ -41,16 +39,14 @@ namespace PGJ002
 
         public static bool menu = true;
         public static bool options = false;
-        public static bool ingame = false;
 
         private void Form1_Click(object sender, EventArgs e)
         {
-            if(menu==true)
+            if (menu == true)
             {
-                if(startbuttonrect.Contains(Cursor.Position)==true)
+                if (startbuttonrect.Contains(Cursor.Position) == true)
                 {
                     menu = false;
-                    ingame = true;
                 }
                 else if (optionsbuttonrect.Contains(Cursor.Position) == true)
                 {
@@ -63,19 +59,23 @@ namespace PGJ002
                     Application.Exit();
                 }
             }
-            else if(options==true)
+            else if (options == true)
             {
-                if(resolutionoptionsrect.Contains(Cursor.Position) == true)
+                if (resolutionoptionsrect.Contains(Cursor.Position) == true)
                 {
                     resolutionoption++;
-                    resolutionoption =(byte)((int)resolutionoption % 4);
+                    resolutionoption = (byte)((int)resolutionoption % 4);
+                    RefreshAssets();
                     this.Refresh();
                 }
-                else if(languageoptionsrect.Contains(Cursor.Position) == true)
+                else if (languageoptionsrect.Contains(Cursor.Position) == true)
                 {
-                    languageoption++;
-                    languageoption = (byte)((int)languageoption % 3);
+                    Program.lang++;
+                    if (Program.lang >= Localization.Language.max)
+                        Program.lang = 0;
+                    RefreshAssets();
                     this.Refresh();
+                    
                 }
             }
         }
@@ -83,14 +83,14 @@ namespace PGJ002
         public Form1()
         {
             InitializeComponent();
-            this.DoubleBuffered = true;
             this.Location = new Point(0, 0);
             this.Width = width;
             this.Height = height;
+            RefreshAssets();
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            if(menu==true)
+            if (menu == true)
             {
                 startbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 optionsbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
@@ -99,14 +99,14 @@ namespace PGJ002
                 e.Graphics.DrawImage(optionsbutton, optionsbuttonrect);
                 e.Graphics.DrawImage(quitbutton, quitbuttonrect);
             }
-            else if(options==true)
+            else if (options == true)
             {
                 resolutionlabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 resolutionoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 languagelabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 languageoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 e.Graphics.DrawImage(resolutionlabel, resolutionlabelrect);
-                switch(resolutionoption)
+                switch (resolutionoption)
                 {
                     case 0:
                         e.Graphics.DrawImage(resolutionoption0, resolutionoptionsrect);
@@ -130,19 +130,27 @@ namespace PGJ002
                         break;
                 }
                 e.Graphics.DrawImage(languagelabel, languagelabelrect);
-                switch(languageoption)
-                {
-                    case 0:
-                        e.Graphics.DrawImage(languageoption0, languageoptionsrect);
-                        break;
-                    case 1:
-                        e.Graphics.DrawImage(languageoption1, languageoptionsrect);
-                        break;
-                    case 2:
-                        e.Graphics.DrawImage(languageoption2, languageoptionsrect);
-                        break;
-                }
+                e.Graphics.DrawImage(languageoptionb, languageoptionsrect);
             }
+        }
+
+        public void RefreshAssets()
+        {
+            h1 = new Bitmap(FileSystem.GetBitmapFromFile("h1"));
+
+            startbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("startbutton"));
+            optionsbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("optionsbutton"));
+            quitbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("quitbutton"));
+
+            resolutionlabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("resolutionlabel"));
+            resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600"));
+            resolutionoption1 = new Bitmap(FileSystem.GetBitmapFromFile("1024x768"));
+            resolutionoption2 = new Bitmap(FileSystem.GetBitmapFromFile("1280x720"));
+            resolutionoption3 = new Bitmap(FileSystem.GetBitmapFromFile("1366x768"));
+
+            languagelabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("languagelabel"));
+            languageoptionb = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("currentlanguage"));
+
         }
 
         private void Form1_SizeChanged(object sender, EventArgs e)

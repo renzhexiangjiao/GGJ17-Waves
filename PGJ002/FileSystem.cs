@@ -27,15 +27,33 @@ namespace PGJ002
             {
                 res = new Bitmap("sprites/" + filename + ".png");
             }
-            catch (System.IO.FileNotFoundException ex)
-            {
-                MessageBox.Show("Exception found!\n" + ex.ToString());
-                res = Instance.defaultTex;
-            }
             catch (Exception ex)
             {
                 MessageBox.Show("Exception found!\n" + ex.ToString());
                 res = Instance.defaultTex;
+            }
+            return res;
+        }
+        public static Bitmap GetLocalizedBitmapFromFile(string filename)
+        {
+            Bitmap res;
+            try
+            {
+                res = new Bitmap("sprites/" + filename + "_"+ Enum.GetName(typeof(Localization.Language), Program.lang) +".png");
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    res = new Bitmap("sprites/" + filename + ".png");
+                    return res;
+                }
+                catch (Exception ex2)
+                {
+                    MessageBox.Show("Exception found!\n" + ex2.ToString());
+                    res = Instance.defaultTex;
+                    return res;
+                }
             }
             return res;
         }
