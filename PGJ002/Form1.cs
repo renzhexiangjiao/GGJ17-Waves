@@ -60,7 +60,6 @@ namespace PGJ002
                 }
                 else if (optionsbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
-                    Music.SetMusic("options");
                     menu = false;
                     options = true;
                     PlayClick();
@@ -101,7 +100,6 @@ namespace PGJ002
                     PlayClick();
                     RefreshAssets();
                     this.Refresh();
-                    Music.SetMusic("menu");
                 }
             }
         }
@@ -114,6 +112,7 @@ namespace PGJ002
             this.Width = width;
             this.Height = height;
             RefreshAssets();
+            Music.SetMusic("menu");
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
             //s.PlayLooping();
         }
