@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace PGJ002
 {
@@ -67,6 +68,7 @@ namespace PGJ002
                 }
                 else if (optionsbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
+                    Music.SetMusic("options");
                     menu = false;
                     options = true;
                     PlayClick();
@@ -80,6 +82,7 @@ namespace PGJ002
             }
             else if (options == true)
             {
+                
                 if (resolutionoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     PlayClick();
@@ -103,8 +106,10 @@ namespace PGJ002
                 {
                     options = false;
                     menu = true;
+                    PlayClick();
                     RefreshAssets();
                     this.Refresh();
+                    Music.SetMusic("menu");
                 }
             }
         }
@@ -117,6 +122,8 @@ namespace PGJ002
             this.Width = width;
             this.Height = height;
             RefreshAssets();
+            //SoundPlayer s = new SoundPlayer("music/menu.wav");
+            //s.PlayLooping();
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
