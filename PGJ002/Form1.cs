@@ -79,6 +79,7 @@ namespace PGJ002
                     resolutionoption = (byte)((int)resolutionoption % 4);
                     RefreshAssets();
                     this.Refresh();
+                    this.Refresh();
                 }
                 else if (languageoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
