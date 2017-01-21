@@ -17,6 +17,7 @@ namespace PGJ002
         public static Bitmap startbutton;
         public static Bitmap optionsbutton;
         public static Bitmap quitbutton;
+        public static Bitmap backbutton;
 
         public static Bitmap resolutionlabel;
         public static Bitmap resolutionoption0;
@@ -32,13 +33,14 @@ namespace PGJ002
         public static byte languageoption = 1;
 
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
-        public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect;
+        public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
         public static bool fullscreenOn = false;
 
         public static bool menu = true;
         public static bool options = false;
+        public static bool ingame = false;
 
         private void PlayClick()
         {
@@ -49,19 +51,20 @@ namespace PGJ002
         {
             if (menu == true)
             {
-                if (startbuttonrect.Contains(Cursor.Position) == true)
+                if (startbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     menu = false;
+                    ingame = true;
                     PlayClick();
                 }
-                else if (optionsbuttonrect.Contains(Cursor.Position) == true)
+                else if (optionsbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     menu = false;
                     options = true;
                     PlayClick();
                     this.Refresh();
                 }
-                else if (quitbuttonrect.Contains(Cursor.Position) == true)
+                else if (quitbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     PlayClick();
                     Application.Exit();
@@ -69,7 +72,7 @@ namespace PGJ002
             }
             else if (options == true)
             {
-                if (resolutionoptionsrect.Contains(Cursor.Position) == true)
+                if (resolutionoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     PlayClick();
                     resolutionoption++;
@@ -77,7 +80,7 @@ namespace PGJ002
                     RefreshAssets();
                     this.Refresh();
                 }
-                else if (languageoptionsrect.Contains(Cursor.Position) == true)
+                else if (languageoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     PlayClick();
                     Program.lang++;
@@ -86,6 +89,13 @@ namespace PGJ002
                     RefreshAssets();
                     this.Refresh();
                     
+                }
+                else if (backbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
+                {
+                    options = false;
+                    menu = true;
+                    RefreshAssets();
+                    this.Refresh();
                 }
             }
         }
@@ -115,6 +125,7 @@ namespace PGJ002
                 resolutionoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 languagelabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 languageoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                backbuttonrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.6953 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 e.Graphics.DrawImage(resolutionlabel, resolutionlabelrect);
                 switch (resolutionoption)
                 {
@@ -141,6 +152,7 @@ namespace PGJ002
                 }
                 e.Graphics.DrawImage(languagelabel, languagelabelrect);
                 e.Graphics.DrawImage(languageoptionb, languageoptionsrect);
+                e.Graphics.DrawImage(backbutton, backbuttonrect);
             }
         }
 
@@ -151,6 +163,7 @@ namespace PGJ002
             startbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("startbutton"));
             optionsbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("optionsbutton"));
             quitbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("quitbutton"));
+            backbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("backbutton"));
 
             resolutionlabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("resolutionlabel"));
             resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600"));
