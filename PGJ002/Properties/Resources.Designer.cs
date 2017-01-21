@@ -69,5 +69,14 @@ namespace PGJ002.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream _defaultSound {
+            get {
+                return ResourceManager.GetStream("_defaultSound", resourceCulture);
+            }
+        }
     }
 }

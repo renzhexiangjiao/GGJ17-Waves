@@ -40,6 +40,11 @@ namespace PGJ002
         public static bool menu = true;
         public static bool options = false;
 
+        private void PlayClick()
+        {
+            Sound.PlayASound("click");
+        }
+
         private void Form1_Click(object sender, EventArgs e)
         {
             if (menu == true)
@@ -47,15 +52,18 @@ namespace PGJ002
                 if (startbuttonrect.Contains(Cursor.Position) == true)
                 {
                     menu = false;
+                    PlayClick();
                 }
                 else if (optionsbuttonrect.Contains(Cursor.Position) == true)
                 {
                     menu = false;
                     options = true;
+                    PlayClick();
                     this.Refresh();
                 }
                 else if (quitbuttonrect.Contains(Cursor.Position) == true)
                 {
+                    PlayClick();
                     Application.Exit();
                 }
             }
@@ -63,6 +71,7 @@ namespace PGJ002
             {
                 if (resolutionoptionsrect.Contains(Cursor.Position) == true)
                 {
+                    PlayClick();
                     resolutionoption++;
                     resolutionoption = (byte)((int)resolutionoption % 4);
                     RefreshAssets();
@@ -70,6 +79,7 @@ namespace PGJ002
                 }
                 else if (languageoptionsrect.Contains(Cursor.Position) == true)
                 {
+                    PlayClick();
                     Program.lang++;
                     if (Program.lang >= Localization.Language.max)
                         Program.lang = 0;
