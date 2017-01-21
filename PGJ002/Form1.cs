@@ -42,6 +42,11 @@ namespace PGJ002
         public static bool options = false;
         public static bool ingame = false;
 
+        private void PlayClick()
+        {
+            Sound.PlayASound("click");
+        }
+
         private void Form1_Click(object sender, EventArgs e)
         {
             if (menu == true)
@@ -50,15 +55,18 @@ namespace PGJ002
                 {
                     menu = false;
                     ingame = true;
+                    PlayClick();
                 }
                 else if (optionsbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
                     menu = false;
                     options = true;
+                    PlayClick();
                     this.Refresh();
                 }
                 else if (quitbuttonrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
+                    PlayClick();
                     Application.Exit();
                 }
             }
@@ -66,6 +74,7 @@ namespace PGJ002
             {
                 if (resolutionoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
+                    PlayClick();
                     resolutionoption++;
                     resolutionoption = (byte)((int)resolutionoption % 4);
                     RefreshAssets();
@@ -73,6 +82,7 @@ namespace PGJ002
                 }
                 else if (languageoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
+                    PlayClick();
                     Program.lang++;
                     if (Program.lang >= Localization.Language.max)
                         Program.lang = 0;

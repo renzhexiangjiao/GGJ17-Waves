@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using System.IO;
 
 namespace PGJ002
 {
@@ -54,6 +55,18 @@ namespace PGJ002
                     res = Instance.defaultTex;
                     return res;
                 }
+            }
+            return res;
+        }
+        public static string GetSoundPath(string filename)
+        {
+            string res;
+            if(File.Exists("sounds/"+filename+".wav"))
+            {
+                res = "sounds/" + filename + ".wav";
+            } else
+            {
+                res = "--[null]--";
             }
             return res;
         }
