@@ -29,7 +29,7 @@ namespace PGJ002
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception found!\n" + ex.ToString());
+                MessageBox.Show("Exception found!\n" + filename + "\n" + ex.ToString());
                 res = Instance.defaultTex;
             }
             return res;
@@ -50,7 +50,7 @@ namespace PGJ002
                 }
                 catch (Exception ex2)
                 {
-                    MessageBox.Show("Exception found!\n" + ex2.ToString());
+                    MessageBox.Show("Exception found!\n"+filename+"\n" + ex2.ToString());
                     res = Instance.defaultTex;
                     return res;
                 }
