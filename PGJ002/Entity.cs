@@ -41,6 +41,13 @@ namespace PGJ002
         public int PositionY = 0;
         public bool isAnimated = false;
 
+        // COST
+        public int cost = 0;
+        public int bamboo_cost = 0;
+        public int sand_cost = 0;
+        public int calcium_cost = 0;
+        public int iron_cost = 0;
+
         public Bitmap sprite;
         public AnimatedSprite animSprite;
 
@@ -98,18 +105,22 @@ namespace PGJ002
             {
                 case EntType.jp_bmb_frm:
                     adds_to_bamboo = 25;
+                    cost = 200;
                     animSprite = MainForm.bBambooFarmer;
                     break;
                 case EntType.jp_clc_min:
                     adds_to_calcium = 15;
+                    cost = 200;
                     animSprite = MainForm.bCalciumMine;
                     break;
                 case EntType.jp_irn_frg:
                     adds_to_sand = 15;
+                    cost = 200;
                     animSprite = MainForm.bIronForge;
                     break;
                 case EntType.jp_snd_mkr:
                     adds_to_sand = 30;
+                    cost = 200;
                     animSprite = MainForm.bSandMaker;
                     break;
                 case EntType.jp_house_lg:
@@ -122,6 +133,35 @@ namespace PGJ002
                     sprite = MainForm.bHouseSmall;
                     break;
             }
+        }
+        public static Bitmap GetSpriteForType(EntType type)
+        {
+            Bitmap sprite = new Bitmap(1, 1);
+            switch (type)
+            {
+                case EntType.jp_bmb_frm:
+                    sprite = MainForm.bBambooFarmer.GetCurrentFrame();
+                    break;
+                case EntType.jp_clc_min:
+                    sprite = MainForm.bCalciumMine.GetCurrentFrame();
+                    break;
+                case EntType.jp_irn_frg:
+                    sprite = MainForm.bIronForge.GetCurrentFrame();
+                    break;
+                case EntType.jp_snd_mkr:
+                    sprite = MainForm.bSandMaker.GetCurrentFrame();
+                    break;
+                case EntType.jp_house_lg:
+                    sprite = MainForm.bHouseLarge;
+                    break;
+                case EntType.jp_house_md:
+                    sprite = MainForm.bHouseMedium;
+                    break;
+                case EntType.jp_house_sm:
+                    sprite = MainForm.bHouseSmall;
+                    break;
+            }
+            return sprite;
         }
     }
 }

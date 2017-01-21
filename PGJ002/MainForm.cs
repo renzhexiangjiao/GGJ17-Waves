@@ -94,7 +94,20 @@ namespace PGJ002
                     return (int)eyeTrackerY - this.Location.Y;
             }
         }
-
+        public int __gameCursorX
+        {
+            get
+            {
+                return __cursorX;
+            }
+        }
+        public int __gameCursorY
+        {
+            get
+            {
+                return __cursorY;
+            }
+        }
         public static bool menu = true;
         public static bool options = false;
         public static bool ingame = false;
@@ -176,6 +189,29 @@ namespace PGJ002
                     this.Refresh();
                 }
             }
+            else if(ingame == true)
+            {
+                bool isCursorOnTile = false;
+                int tX = 0;
+                int tY = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    for (int o = 0; o < 5; o++)
+                    {
+                        Point[] t = Tiles.GetTilePolygon(i, o);
+                        if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                        {
+                            isCursorOnTile = true;
+                            tX = i;
+                            tY = o;
+                        }
+                    }
+                }
+                if(isCursorOnTile && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
+                {
+                    Entity.CreateEntity(currentSelection, tX, tY);
+                }
+            }
         }
         Bitmap gameB;
         public MainForm()
@@ -193,11 +229,26 @@ namespace PGJ002
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
             //s.PlayLooping();
         }
-
+        public EntType currentSelection;
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ShiftKey)
                 Form1_Click("eyetracker", null);
+            if(ingame)
+            {
+                if(e.KeyCode == Keys.Right)
+                    currentSelection++;
+                if (e.KeyCode == Keys.Left)
+                    currentSelection--;
+                if(currentSelection >= EntType.ent_max)
+                {
+                    currentSelection = 0;
+                }
+                if(currentSelection < 0)
+                {
+                    currentSelection = EntType.ent_max - 1;
+                }
+            }
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
@@ -250,16 +301,51 @@ namespace PGJ002
             else if (ingame == true)
             {
                 //this.DoubleBuffered = false;
-                e.Graphics.DrawString(fps.ToString(), new Font(FontFamily.GenericMonospace,
-                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
+                
                 
                 using (Graphics gameG = Graphics.FromImage(gameB))
                 {
+
                     gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 640, 480));
+                    gameG.DrawString(fps.ToString(), new Font(FontFamily.GenericMonospace,
+                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
                     gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
-                    Point[] t = new Point[] { Tiles.GetTilePointSelection(0, 0), Tiles.GetTilePointSelection(1, 0), Tiles.GetTilePointSelection(1, 1), Tiles.GetTilePointSelection(0, 1) };
-                    gameG.DrawPolygon(new Pen(Color.Green),t);
+                    bool isCursorOnTile = false;
+                    int tX = 0;
+                    int tY = 0;
+                    for(int i = 0; i < 5; i++)
+                    {
+                        for(int o = 0; o < 5;o++)
+                        {
+                            Point[] t = Tiles.GetTilePolygon(i, o);
+                            if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                            {
+                                isCursorOnTile = true;
+                                tX = i;
+                                tY = o;
+                            }
+                        }
+                    }
+                    if (isCursorOnTile)
+                    {
+                        Point[] t = Tiles.GetTilePolygon(tX, tY);
+                        if((fc % 16)>8 && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
+                            gameG.DrawImage(Entity.GetSpriteForType(currentSelection), Tiles.GetTilePoint(tX, tY));
+                        gameG.DrawPolygon(new Pen(Color.Green, fc % 7), t);
+                    }
+                    foreach(Entity ent in Entity.entList)
+                    {
+                        if(ent.isAnimated)
+                        {
+                            gameG.DrawImage(ent.animSprite.GetCurrentFrame(), Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
+                        }
+                        else
+                        {
+                            gameG.DrawImage(ent.sprite, Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
+                        }
+                    }
+                    /*
                     gameG.DrawImage(bSandMaker.GetCurrentFrame(), Tiles.GetTilePoint(1,1));
                     gameG.DrawImage(bBambooFarmer.GetCurrentFrame(), Tiles.GetTilePoint(2, 1));
                     gameG.DrawImage(bCalciumMine.GetCurrentFrame(), Tiles.GetTilePoint(2, 2));
@@ -277,7 +363,10 @@ namespace PGJ002
                     gameG.DrawImage(bHouseLarge, Tiles.GetTilePoint(3, 3));
                     gameG.DrawImage(bHouseMedium, Tiles.GetTilePoint(1, 3));
                     gameG.DrawImage(bHouseSmall, Tiles.GetTilePoint(2, 3));
-                    
+                    */
+                    gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.Black), new Point(__gameCursorX, __gameCursorY));
+                    gameG.DrawString(Enum.GetName(typeof(EntType), currentSelection), new Font(FontFamily.GenericMonospace,
+                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(110, 0));
                 }
                 var gameRect = new Rectangle(0, 0, __width, __height);
                 e.Graphics.DrawImage(gameB, gameRect);
