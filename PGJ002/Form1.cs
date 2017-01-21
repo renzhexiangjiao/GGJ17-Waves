@@ -30,6 +30,7 @@ namespace PGJ002
         public static Bitmap languageoption0 = new Bitmap(Bitmap.FromFile("polski.png"));
         public static Bitmap languageoption1 = new Bitmap(Bitmap.FromFile("english.png"));
         public static Bitmap languageoption2 = new Bitmap(Bitmap.FromFile("zhongwen.png"));
+        // jakaś zmiana
 
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect;
