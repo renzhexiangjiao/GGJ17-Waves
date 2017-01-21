@@ -54,10 +54,26 @@ namespace PGJ002
                 {
                     menu = false;
                     options = true;
+                    this.Refresh();
                 }
                 else if (quitbuttonrect.Contains(Cursor.Position) == true)
                 {
                     Application.Exit();
+                }
+            }
+            else if(options==true)
+            {
+                if(resolutionoptionsrect.Contains(Cursor.Position) == true)
+                {
+                    resolutionoption++;
+                    resolutionoption =(byte)((int)resolutionoption % 4);
+                    this.Refresh();
+                }
+                else if(languageoptionsrect.Contains(Cursor.Position) == true)
+                {
+                    languageoption++;
+                    languageoption = (byte)((int)languageoption % 3);
+                    this.Refresh();
                 }
             }
         }
@@ -82,7 +98,47 @@ namespace PGJ002
             }
             else if(options==true)
             {
-
+                resolutionlabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                resolutionoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                languagelabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                languageoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                e.Graphics.DrawImage(resolutionlabel, resolutionlabelrect);
+                switch(resolutionoption)
+                {
+                    case 0:
+                        e.Graphics.DrawImage(resolutionoption0, resolutionoptionsrect);
+                        this.Width = 800;
+                        this.Height = 600;
+                        break;
+                    case 1:
+                        e.Graphics.DrawImage(resolutionoption1, resolutionoptionsrect);
+                        this.Width = 1024;
+                        this.Height = 768;
+                        break;
+                    case 2:
+                        e.Graphics.DrawImage(resolutionoption2, resolutionoptionsrect);
+                        this.Width = 1280;
+                        this.Height = 720;
+                        break;
+                    case 3:
+                        e.Graphics.DrawImage(resolutionoption3, resolutionoptionsrect);
+                        this.Width = 1366;
+                        this.Height = 768;
+                        break;
+                }
+                e.Graphics.DrawImage(languagelabel, languagelabelrect);
+                switch(languageoption)
+                {
+                    case 0:
+                        e.Graphics.DrawImage(languageoption0, languageoptionsrect);
+                        break;
+                    case 1:
+                        e.Graphics.DrawImage(languageoption1, languageoptionsrect);
+                        break;
+                    case 2:
+                        e.Graphics.DrawImage(languageoption2, languageoptionsrect);
+                        break;
+                }
             }
         }
 
