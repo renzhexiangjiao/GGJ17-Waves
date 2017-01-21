@@ -14,6 +14,7 @@ namespace PGJ002
         [STAThread]
         static void Main()
         {
+            FileSystem.Initialize();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
