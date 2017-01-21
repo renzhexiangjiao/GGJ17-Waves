@@ -82,6 +82,7 @@ namespace PGJ002
                     resolutionoption = (byte)((int)resolutionoption % 4);
                     RefreshAssets();
                     this.Refresh();
+                    this.Refresh();
                 }
                 else if (languageoptionsrect.Contains(new Point(Cursor.Position.X - this.Location.X, Cursor.Position.Y - this.Location.Y)) == true)
                 {
@@ -108,6 +109,7 @@ namespace PGJ002
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
             this.Location = new Point(0, 0);
             this.Width = width;
             this.Height = height;
