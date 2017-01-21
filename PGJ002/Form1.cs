@@ -15,21 +15,21 @@ namespace PGJ002
         public static Bitmap h1 = new Bitmap(FileSystem.GetBitmapFromFile("h1"));
 
         public static Bitmap startbutton = new Bitmap(FileSystem.GetBitmapFromFile("startbutton")); 
-        public static Bitmap optionsbutton = new Bitmap(FileSystem.GetBitmapFromFile("optionsbutton.png"));
-        public static Bitmap quitbutton = new Bitmap(FileSystem.GetBitmapFromFile("quitbutton.png"));
+        public static Bitmap optionsbutton = new Bitmap(FileSystem.GetBitmapFromFile("optionsbutton"));
+        public static Bitmap quitbutton = new Bitmap(FileSystem.GetBitmapFromFile("quitbutton"));
 
-        public static Bitmap resolutionlabel = new Bitmap(FileSystem.GetBitmapFromFile("resolutionlabel.png"));
-        public static Bitmap resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600.png"));
-        public static Bitmap resolutionoption1 = new Bitmap(FileSystem.GetBitmapFromFile("1024x768.png"));
-        public static Bitmap resolutionoption2 = new Bitmap(FileSystem.GetBitmapFromFile("1280x720.png"));
-        public static Bitmap resolutionoption3 = new Bitmap(FileSystem.GetBitmapFromFile("1366x768.png"));
+        public static Bitmap resolutionlabel = new Bitmap(FileSystem.GetBitmapFromFile("resolutionlabel"));
+        public static Bitmap resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600"));
+        public static Bitmap resolutionoption1 = new Bitmap(FileSystem.GetBitmapFromFile("1024x768"));
+        public static Bitmap resolutionoption2 = new Bitmap(FileSystem.GetBitmapFromFile("1280x720"));
+        public static Bitmap resolutionoption3 = new Bitmap(FileSystem.GetBitmapFromFile("1366x768"));
 
         public static byte resolutionoption = 3;
 
-        public static Bitmap languagelabel = new Bitmap(FileSystem.GetBitmapFromFile("languagelabel.png"));
-        public static Bitmap languageoption0 = new Bitmap(FileSystem.GetBitmapFromFile("polski.png"));
-        public static Bitmap languageoption1 = new Bitmap(FileSystem.GetBitmapFromFile("english.png"));
-        public static Bitmap languageoption2 = new Bitmap(FileSystem.GetBitmapFromFile("zhongwen.png"));
+        public static Bitmap languagelabel = new Bitmap(FileSystem.GetBitmapFromFile("languagelabel"));
+        public static Bitmap languageoption0 = new Bitmap(FileSystem.GetBitmapFromFile("polski"));
+        public static Bitmap languageoption1 = new Bitmap(FileSystem.GetBitmapFromFile("english"));
+        public static Bitmap languageoption2 = new Bitmap(FileSystem.GetBitmapFromFile("zhongwen"));
 
         public static byte languageoption = 1;
 
@@ -41,6 +41,7 @@ namespace PGJ002
 
         public static bool menu = true;
         public static bool options = false;
+        public static bool ingame = false;
 
         private void Form1_Click(object sender, EventArgs e)
         {
@@ -49,6 +50,7 @@ namespace PGJ002
                 if(startbuttonrect.Contains(Cursor.Position)==true)
                 {
                     menu = false;
+                    ingame = true;
                 }
                 else if (optionsbuttonrect.Contains(Cursor.Position) == true)
                 {
@@ -81,6 +83,7 @@ namespace PGJ002
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
             this.Location = new Point(0, 0);
             this.Width = width;
             this.Height = height;
