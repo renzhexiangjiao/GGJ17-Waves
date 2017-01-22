@@ -132,6 +132,16 @@ namespace PGJ002
         public int adds_to_sand = 0;
         public int adds_to_iron = 0;
 
+        public static void ResetWorld()
+        {
+            entList.Clear();
+            add_bamboo = 0;
+            add_calcium = 0;
+            add_cash = 0;
+            add_iron = 0;
+            add_sand = 0;
+        }
+
         // Creates an ent and returns index
         public static int CreateEntity(EntType type, int x, int y)
         {

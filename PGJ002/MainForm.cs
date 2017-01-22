@@ -57,10 +57,12 @@ namespace PGJ002
         public static AnimatedSprite bBambooFarmer;
         public static AnimatedSprite bCalciumMine;
         public static AnimatedSprite bIronForge;
+        public static Bitmap bUpgrade;
         
         public static Bitmap bHouseLarge;
         public static Bitmap bHouseMedium;
         public static Bitmap bHouseSmall;
+        
         
         public static AnimatedSprite bGrassBG;
 
@@ -233,9 +235,9 @@ namespace PGJ002
                     {
                         Entity.CreateEntity(currentSelection, tX, tY);
                     }
-                    else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
+                    else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY && (x.type == EntType.jp_bmb_frm || x.type == EntType.jp_clc_min || x.type == EntType.jp_irn_frg || x.type == EntType.jp_snd_mkr)) != null)
                     {
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).level++;
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY && (x.type == EntType.jp_bmb_frm || x.type == EntType.jp_clc_min || x.type == EntType.jp_irn_frg || x.type == EntType.jp_snd_mkr)).level++;
                     }
                     else if (currentMode == Mode.Bulldoze && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
@@ -292,6 +294,8 @@ namespace PGJ002
                 Form1_Click("eyetracker", null);
             if(ingame)
             {
+                if (e.KeyCode == Keys.Escape)
+                    Entity.ResetWorld();
                 if (e.KeyCode == Keys.Right)
                     currentSelection++;
                 if (e.KeyCode == Keys.Left)
@@ -418,15 +422,23 @@ namespace PGJ002
                             gameG.DrawImage(Entity.GetSpriteForType(currentSelection), Tiles.GetTilePoint(tX, tY));
                     }
                     Entity selectedEnt = Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY);
-                    foreach (Entity ent in Entity.entList)
-                    {
-                        if(ent.isAnimated)
+                    for (int p = 0; p < 5; p++) {
+                        for (int o = 0; o < 5; o++)
                         {
-                            gameG.DrawImage(ent.animSprite.GetCurrentFrame(), Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
-                        }
-                        else
-                        {
-                            gameG.DrawImage(ent.sprite, Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
+                            Entity ent = Entity.entList.Find(x => x.PositionX == p && x.PositionY == o);
+                            if (ent == null) continue;
+                            if (ent.isAnimated)
+                            {
+                                gameG.DrawImage(ent.animSprite.GetCurrentFrame(), Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
+                            }
+                            else
+                            {
+                                gameG.DrawImage(ent.sprite, Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
+                            }
+                            for (int i = 0; i < ent.level; i++)
+                            {
+                                gameG.DrawImage(bUpgrade, Tiles.GetTilePointForUpgrade(ent.PositionX, ent.PositionY, i));
+                            }
                         }
                     }
                     /*
@@ -522,6 +534,7 @@ namespace PGJ002
             bBambooFarmer = FileSystem.GetAnimSpriteFromFiles("game/jp_bmb_frm", 4);
             bCalciumMine = FileSystem.GetAnimSpriteFromFiles("game/jp_clc_min", 4);
             bIronForge = FileSystem.GetAnimSpriteFromFiles("game/jp_irn_frg", 4);
+            bUpgrade = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_rsc_flr"));
 
             bHouseLarge = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_lg"));
             bHouseMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_md"));

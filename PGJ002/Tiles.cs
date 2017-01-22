@@ -81,6 +81,10 @@ namespace PGJ002
         {
             return new Point(oX + (x * offsetX) + (y * (offsetY+10)), oY + (y * ((10)-offsetY)) + (x * (offsetX)));
         }
+        public static Point GetTilePointForUpgrade(int x, int y, int level)
+        {
+            return new Point(oX + (x * offsetX) + (y * (offsetY + 10)),(-8*level) + oY + (y * ((10) - offsetY)) + (x * (offsetX)));
+        }
         public static Point GetTilePointSelection(int x, int y)
         {
             return new Point(oX + (x * offsetX) + (y * (offsetY + 10)), oY + (48) + (y * ((10) - offsetY)) + (x * (offsetX)));
