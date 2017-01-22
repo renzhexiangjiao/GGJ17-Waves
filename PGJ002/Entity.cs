@@ -268,7 +268,7 @@ namespace PGJ002
                         n = "Farma Bambusa";
                         break;
                     case EntType.jp_clc_min:
-                        n = "Kopalnia Wapnienia";
+                        n = "Kopalnia Wapienia";
                         break;
                     case EntType.jp_irn_frg:
                         n = "Kuźnia Żelaza";
@@ -292,25 +292,25 @@ namespace PGJ002
                 switch (type)
                 {
                     case EntType.jp_bmb_frm:
-                        n = "Farma Bambusa";
+                        n = "\u7530\u7AF9\u5B50";
                         break;
                     case EntType.jp_clc_min:
-                        n = "Kopalnia Wapnienia";
+                        n = "\u77F3\u7070\u5CA9\u77FF";
                         break;
                     case EntType.jp_irn_frg:
-                        n = "Kuźnia Żelaza";
+                        n = "\u94C1\u953B";
                         break;
                     case EntType.jp_snd_mkr:
-                        n = "Wykop Piasku";
+                        n = "\u6C99\u6316\u65B9";
                         break;
                     case EntType.jp_house_lg:
-                        n = "Dom (Duży)";
+                        n = "\u623f\u5b50 (\u5927)";
                         break;
                     case EntType.jp_house_md:
-                        n = "Dom (Średni)";
+                        n = "\u623f\u5b50 (\u4E2D\u578B)";
                         break;
                     case EntType.jp_house_sm:
-                        n = "Dom (Mały)";
+                        n = "\u623f\u5b50 (\u5C0F)";
                         break;
                 }
             }
@@ -322,7 +322,7 @@ namespace PGJ002
                         n = "Bamboo Farm";
                         break;
                     case EntType.jp_clc_min:
-                        n = "Calcium Mine";
+                        n = "Limestone Mine";
                         break;
                     case EntType.jp_irn_frg:
                         n = "Iron Forge";
