@@ -140,6 +140,7 @@ namespace PGJ002
             add_cash = 0;
             add_iron = 0;
             add_sand = 0;
+            CreateEntity(EntType.jp_house_sm, 1, 2);
         }
 
         // Creates an ent and returns index
