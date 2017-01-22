@@ -201,19 +201,19 @@ namespace PGJ002
             }
             else if(ingame == true)
             {
-                bool isCursorOnTile = false;
-                int tX = 0;
-                int tY = 0;
-                for (int i = 0; i < 5; i++)
+                if (!lockCursor)
                 {
-                    for (int o = 0; o < 5; o++)
+                    for (int i = 0; i < 5; i++)
                     {
-                        Point[] t = Tiles.GetTilePolygon(i, o);
-                        if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                        for (int o = 0; o < 5; o++)
                         {
-                            isCursorOnTile = true;
-                            tX = i;
-                            tY = o;
+                            Point[] t = Tiles.GetTilePolygon(i, o);
+                            if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                            {
+                                isCursorOnTile = true;
+                                tX = i;
+                                tY = o;
+                            }
                         }
                     }
                 }
@@ -264,7 +264,8 @@ namespace PGJ002
             mode_max
         };
         public EntType currentSelection;
-        public Mode currentMode; 
+        public Mode currentMode;
+        public bool lockCursor = false;
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ShiftKey)
@@ -280,6 +281,9 @@ namespace PGJ002
                     currentMode++;
                 if (e.KeyCode == Keys.Down)
                     currentMode--;
+
+                if (e.KeyCode == Keys.ControlKey)
+                    lockCursor = !lockCursor;
 
                 if(currentSelection >= EntType.ent_max)
                 {
@@ -302,6 +306,9 @@ namespace PGJ002
         }
         int lastPosX = 0;
         int lastPosY = 0;
+        bool isCursorOnTile = false;
+        int tX = 0;
+        int tY = 0;
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -363,20 +370,20 @@ namespace PGJ002
                     gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
                     //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
-                //12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
-                    bool isCursorOnTile = false;
-                    int tX = 0;
-                    int tY = 0;
-                    for(int i = 0; i < 5; i++)
+                    //12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
+                    if (!lockCursor)
                     {
-                        for(int o = 0; o < 5;o++)
+                        for (int i = 0; i < 5; i++)
                         {
-                            Point[] t = Tiles.GetTilePolygon(i, o);
-                            if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                            for (int o = 0; o < 5; o++)
                             {
-                                isCursorOnTile = true;
-                                tX = i;
-                                tY = o;
+                                Point[] t = Tiles.GetTilePolygon(i, o);
+                                if (Tiles.InsidePolygon(t, new Point(__gameCursorX, __gameCursorY)))
+                                {
+                                    isCursorOnTile = true;
+                                    tX = i;
+                                    tY = o;
+                                }
                             }
                         }
                     }
@@ -440,13 +447,13 @@ namespace PGJ002
                     //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.Black), new Point(__gameCursorX, __gameCursorY));
                     gameG.DrawString("Building to build: "+Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(110, 0));
-                    if(selectedEnt != null && !useEyeTracker)
+                    if(selectedEnt != null && (!useEyeTracker || lockCursor))
                         gameG.DrawString("\nPopulation: "+Entity.population.ToString()+"\nCash: "+Entity.cash.ToString()+" YEN\nBamboo: "+Entity.bamboo.ToString()+" kg\nSand: "+Entity.sand.ToString()+" kg\nCalcium: "+Entity.calcium.ToString()+" kg\nIron: "+Entity.iron+" kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: "+ Enum.GetName(typeof(Mode), currentMode)+"\nSelected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
                     else
                         gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
-                    if (selectedEnt != null && useEyeTracker)
+                    if (selectedEnt != null && (useEyeTracker && !lockCursor))
                         gameG.DrawString("Selected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(lastPosX,lastPosY));
                     else
@@ -504,7 +511,7 @@ namespace PGJ002
             Wind,
             Earthquake
         }
-        public int nextDisaster = 30;
+        public int nextDisaster = 65;
         public Disaster currentDisaster = Disaster.None;
         private void waveTimer_OnTick(object sender, EventArgs e)
         {
@@ -521,8 +528,8 @@ namespace PGJ002
             {
                 Random r = new Random();
                 counter = 0;
-                nextDisaster = r.Next(20,60);
-                currentDisaster = (Disaster)r.Next(Enum.GetValues(typeof(Disaster)).Length);
+                nextDisaster = r.Next(20,50);
+                currentDisaster = (Disaster)r.Next((int)Disaster.None+1,Enum.GetValues(typeof(Disaster)).Length);
                 for(int i = 0; i < Entity.entList.Count; i++)
                 {
                     Entity ent = Entity.entList[i];
