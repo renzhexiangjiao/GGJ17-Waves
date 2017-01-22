@@ -38,6 +38,7 @@ namespace PGJ002
         public static byte languageoption = 1;
 
         public static Bitmap opLabel;
+        public static Bitmap gameLogo;
 
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
@@ -58,8 +59,8 @@ namespace PGJ002
         public static Bitmap bHouseLarge;
         public static Bitmap bHouseMedium;
         public static Bitmap bHouseSmall;
-
-        public static Bitmap bGrassBG;
+        
+        public static AnimatedSprite bGrassBG;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
         public static bool fullscreenOn = false;
@@ -130,7 +131,7 @@ namespace PGJ002
 
         private void PlayClick()
         {
-            Sound.PlayASound("click");
+            Sound.PlayASound("click_sound_1");
         }
 
         private void Form1_Click(object sender, EventArgs e)
@@ -144,6 +145,7 @@ namespace PGJ002
                     menu = false;
                     ingame = true;
                     PlayClick();
+                    Music.SetMusic("gameplay_track_2");
                     waveTimer.Interval = 1000;
                     gameTimer.Interval = 17;
                     animTimer.Interval = 100;
@@ -251,7 +253,7 @@ namespace PGJ002
             lightlyFilteredGazeDataStream.Next += (s, e) => { eyeTrackerX = e.X; eyeTrackerY = e.Y; };
             RefreshAssets();
             this.KeyDown += MainForm_KeyDown;
-            Music.SetMusic("menu");
+            Music.SetMusic("menu_sound_2_proper");
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
             //s.PlayLooping();
         }
@@ -314,9 +316,11 @@ namespace PGJ002
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             if (menu == true)
             {
-                startbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.04427 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
-                optionsbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
-                quitbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.6953 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                Rectangle logorect = new Rectangle((int)(0.35 * __width), (int)(0.1 * __height), (int)(0.3 * __width), (int)(0.2 * __height));
+                startbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.30 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                optionsbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.50 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                quitbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.70 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                e.Graphics.DrawImage(gameLogo, logorect);
                 e.Graphics.DrawImage(startbutton, startbuttonrect);
                 e.Graphics.DrawImage(optionsbutton, optionsbuttonrect);
                 e.Graphics.DrawImage(quitbutton, quitbuttonrect);
@@ -366,7 +370,7 @@ namespace PGJ002
                 {
                     gameG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                     gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 640, 480));
-                    gameG.DrawImage(bGrassBG, new Rectangle(0, 0, 640, 480));
+                    gameG.DrawImage(bGrassBG.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
                     gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
                     //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
@@ -485,6 +489,7 @@ namespace PGJ002
             languagelabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("languagelabel"));
             languageoptionb = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("currentlanguage"));
 
+            gameLogo = new Bitmap(FileSystem.GetBitmapFromFile("island_of_waves"));
             opLabel = new Bitmap(FileSystem.GetBitmapFromFile("op"));
 
             bWaterWaves = FileSystem.GetAnimSpriteFromFiles("game/wave_Animation 1", 5);
@@ -501,7 +506,7 @@ namespace PGJ002
             bHouseMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_md"));
             bHouseSmall = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_sm"));
 
-            bGrassBG = new Bitmap(FileSystem.GetBitmapFromFile("game/grass_bg"));
+            bGrassBG = FileSystem.GetAnimSpriteFromFiles("game/grass_bg",3);
         }
         public enum Disaster
         {
@@ -513,29 +518,46 @@ namespace PGJ002
         }
         public int nextDisaster = 65;
         public Disaster currentDisaster = Disaster.None;
+        public Disaster nextDis;
+        public bool playedStinger = false;
+        public bool assignedNextDis = false;
         private void waveTimer_OnTick(object sender, EventArgs e)
         {
             fps = fc % prevfc;
             prevfc = fc;
             counter++;
-            if (counter % nextDisaster == 0)
-                timer = "0:00";
-            else if (counter % nextDisaster > 10)
-                timer = "0:0" + (nextDisaster - counter % nextDisaster).ToString();
-            else
-                timer = "0:" + (nextDisaster - counter % nextDisaster).ToString();
-            if(counter % nextDisaster == 0)
+            Random r = new Random();
+            if (!assignedNextDis)
             {
-                Random r = new Random();
+                nextDis = (Disaster)r.Next((int)Disaster.None + 1, Enum.GetValues(typeof(Disaster)).Length);
+                assignedNextDis = true;
+            }
+            if(nextDisaster - counter <= 8 && nextDis == Disaster.Water && !playedStinger)
+            {
+                Sound.PlayASound("water_wave_sound_1");
+                playedStinger = true;
+            }
+            if (nextDisaster - counter <= 8 && nextDis == Disaster.Wind && !playedStinger)
+            {
+                Sound.PlayASound("wind_wave_sound_1");
+                playedStinger = true;
+            }
+            if (counter % nextDisaster == 0)
+            {
                 counter = 0;
                 nextDisaster = r.Next(20,50);
-                currentDisaster = (Disaster)r.Next((int)Disaster.None+1,Enum.GetValues(typeof(Disaster)).Length);
+                currentDisaster = nextDis;
+                assignedNextDis = false;
+                playedStinger = false;
                 for(int i = 0; i < Entity.entList.Count; i++)
                 {
                     Entity ent = Entity.entList[i];
                     ent.health -= r.Next(100);
                     if (ent.health < 0)
+                    {
                         Entity.entList.Remove(ent);
+                        Sound.PlayASound("break_sound_1");
+                    }
                 }
             }
             int req_population = 0;
@@ -593,6 +615,7 @@ namespace PGJ002
             bBambooFarmer.AdvanceFrame();
             bCalciumMine.AdvanceFrame();
             bIronForge.AdvanceFrame();
+            bGrassBG.AdvanceFrame();
             if (currentDisaster != Disaster.None)
             {
                 switch (currentDisaster)
