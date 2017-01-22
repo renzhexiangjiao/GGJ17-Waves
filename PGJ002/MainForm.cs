@@ -64,7 +64,7 @@ namespace PGJ002
         public static Bitmap bHouseSmall;
         
         
-        public static AnimatedSprite bGrassBG;
+        public static Bitmap bGrassBG;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
         public static bool fullscreenOn = false;
@@ -393,11 +393,11 @@ namespace PGJ002
                 {
                     gameG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                     gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 800, 600));
-                    gameG.DrawImage(bGrassBG.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
+                    gameG.DrawImage(bGrassBG, new Rectangle(0, 0, 800, 600));
                     gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
-                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
+                12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                     //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
-                    //12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
+                    //12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(55, 0));
                     if (!lockCursor)
                     {
                         for (int i = 0; i < 5; i++)
@@ -479,23 +479,64 @@ namespace PGJ002
                                 break;
                         }
                     }
-                    //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.Black), new Point(__gameCursorX, __gameCursorY));
-                    gameG.DrawString("Building to build: "+Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
-                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(110, 0));
-                    if(selectedEnt != null && (!useEyeTracker || lockCursor))
-                        gameG.DrawString("\nPopulation: "+Entity.population.ToString()+"\nCash: "+Entity.cash.ToString()+" YEN\nBamboo: "+Entity.bamboo.ToString()+" kg\nSand: "+Entity.sand.ToString()+" kg\nCalcium: "+Entity.calcium.ToString()+" kg\nIron: "+Entity.iron+" kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: "+ Enum.GetName(typeof(Mode), currentMode)+"\nSelected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
-               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
-                    else
-                        gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
-               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
-                    if (selectedEnt != null && (useEyeTracker && !lockCursor))
-                        gameG.DrawString("Selected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
-               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(lastPosX,lastPosY));
-                    else
+                    //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.White), new Point(__gameCursorX, __gameCursorY));
+                    if (Program.lang == Localization.Language.english)
                     {
-                        lastPosX = __gameCursorX;
-                        lastPosY = __gameCursorY;
+                        gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
+                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
+                        if (selectedEnt != null && (!useEyeTracker || lockCursor))
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        else
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        if (selectedEnt != null && (useEyeTracker && !lockCursor))
+                            gameG.DrawString("Selected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(lastPosX, lastPosY));
+                        else
+                        {
+                            lastPosX = __gameCursorX;
+                            lastPosY = __gameCursorY;
+                        }
+                    } else if(Program.lang == Localization.Language.polish)
+                    {
+                        gameG.DrawString("Obecny budynek: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
+                12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
+                        if (selectedEnt != null && (!useEyeTracker || lockCursor))
+                            gameG.DrawString("\nPopulacja: " + Entity.population.ToString() + "\nPieniądze: " + Entity.cash.ToString() + " YEN\nBambus: " + Entity.bamboo.ToString() + " kg\nPiasek: " + Entity.sand.ToString() + " kg\nWapień: " + Entity.calcium.ToString() + " kg\nŻelazo: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\nWybrany budynek: " + Entity.GetNameForType(selectedEnt.type) + "\nWytrzymałość: " + selectedEnt.health.ToString() + "\nPoziom: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        else
+                            gameG.DrawString("\nPopulacja: " + Entity.population.ToString() + "\nPieniądze: " + Entity.cash.ToString() + " YEN\nBambus: " + Entity.bamboo.ToString() + " kg\nPiasek: " + Entity.sand.ToString() + " kg\nWapień: " + Entity.calcium.ToString() + " kg\nŻelazo: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        if (selectedEnt != null && (useEyeTracker && !lockCursor))
+                            gameG.DrawString("Wybrany budynek: " + Entity.GetNameForType(selectedEnt.type) + "\nWytrzymałość: " + selectedEnt.health.ToString() + "\nPoziom: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(lastPosX, lastPosY));
+                        else
+                        {
+                            lastPosX = __gameCursorX;
+                            lastPosY = __gameCursorY;
+                        }
                     }
+                    else if (Program.lang == Localization.Language.zhongwen)  // WYMAGA TŁUMACZENIA
+                    {
+                        gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
+                12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
+                        if (selectedEnt != null && (!useEyeTracker || lockCursor))
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        else
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
+                        if (selectedEnt != null && (useEyeTracker && !lockCursor))
+                            gameG.DrawString("Selected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                   12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(lastPosX, lastPosY));
+                        else
+                        {
+                            lastPosX = __gameCursorX;
+                            lastPosY = __gameCursorY;
+                        }
+                    }
+
                 }
                 var gameRect = new Rectangle(0, 0, __width, __height);
                 e.Graphics.DrawImage(gameB, gameRect);
@@ -540,7 +581,7 @@ namespace PGJ002
             bHouseMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_md"));
             bHouseSmall = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_sm"));
 
-            bGrassBG = FileSystem.GetAnimSpriteFromFiles("game/grass_bg",3);
+            bGrassBG = new Bitmap(FileSystem.GetBitmapFromFile("game/map_empty"));
         }
         public enum Disaster
         {
@@ -649,7 +690,7 @@ namespace PGJ002
             bBambooFarmer.AdvanceFrame();
             bCalciumMine.AdvanceFrame();
             bIronForge.AdvanceFrame();
-            bGrassBG.AdvanceFrame();
+           
             if (currentDisaster != Disaster.None)
             {
                 switch (currentDisaster)

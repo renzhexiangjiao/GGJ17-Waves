@@ -259,29 +259,86 @@ namespace PGJ002
         public static string GetNameForType(EntType type)
         {
             string n = "null";
-            switch (type)
+            if (Program.lang == Localization.Language.polish)
             {
-                case EntType.jp_bmb_frm:
-                    n = "Bamboo Farm";
-                    break;
-                case EntType.jp_clc_min:
-                    n = "Calcium Mine";
-                    break;
-                case EntType.jp_irn_frg:
-                    n = "Iron Forge";
-                    break;
-                case EntType.jp_snd_mkr:
-                    n = "Sand Maker";
-                    break;
-                case EntType.jp_house_lg:
-                    n = "House (Large)";
-                    break;
-                case EntType.jp_house_md:
-                    n = "House (Medium)";
-                    break;
-                case EntType.jp_house_sm:
-                    n = "House (Small)";
-                    break;
+                switch (type)
+                {
+                    case EntType.jp_bmb_frm:
+                        n = "Farma Bambusa";
+                        break;
+                    case EntType.jp_clc_min:
+                        n = "Kopalnia Wapnienia";
+                        break;
+                    case EntType.jp_irn_frg:
+                        n = "Kuźnia Żelaza";
+                        break;
+                    case EntType.jp_snd_mkr:
+                        n = "Wykop Piasku";
+                        break;
+                    case EntType.jp_house_lg:
+                        n = "Dom (Duży)";
+                        break;
+                    case EntType.jp_house_md:
+                        n = "Dom (Średni)";
+                        break;
+                    case EntType.jp_house_sm:
+                        n = "Dom (Mały)";
+                        break;
+                }
+            }
+            else if (Program.lang == Localization.Language.zhongwen)  // WYMAGA TŁUMACZENIA
+            {
+                switch (type)
+                {
+                    case EntType.jp_bmb_frm:
+                        n = "Farma Bambusa";
+                        break;
+                    case EntType.jp_clc_min:
+                        n = "Kopalnia Wapnienia";
+                        break;
+                    case EntType.jp_irn_frg:
+                        n = "Kuźnia Żelaza";
+                        break;
+                    case EntType.jp_snd_mkr:
+                        n = "Wykop Piasku";
+                        break;
+                    case EntType.jp_house_lg:
+                        n = "Dom (Duży)";
+                        break;
+                    case EntType.jp_house_md:
+                        n = "Dom (Średni)";
+                        break;
+                    case EntType.jp_house_sm:
+                        n = "Dom (Mały)";
+                        break;
+                }
+            }
+            else
+            {
+                switch (type)
+                {
+                    case EntType.jp_bmb_frm:
+                        n = "Bamboo Farm";
+                        break;
+                    case EntType.jp_clc_min:
+                        n = "Calcium Mine";
+                        break;
+                    case EntType.jp_irn_frg:
+                        n = "Iron Forge";
+                        break;
+                    case EntType.jp_snd_mkr:
+                        n = "Sand Excavation";
+                        break;
+                    case EntType.jp_house_lg:
+                        n = "House (Large)";
+                        break;
+                    case EntType.jp_house_md:
+                        n = "House (Medium)";
+                        break;
+                    case EntType.jp_house_sm:
+                        n = "House (Small)";
+                        break;
+                }
             }
             return n;
         }
