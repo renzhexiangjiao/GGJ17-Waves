@@ -40,6 +40,8 @@ namespace PGJ002
         public static Bitmap opLabel;
         public static Bitmap gameLogo;
 
+        public static AnimatedSprite menuBackground;
+
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
 
@@ -109,14 +111,14 @@ namespace PGJ002
         {
             get
             {
-                return (int)(__cursorX / (float)((float)this.Width / 640.0f));
+                return (int)(__cursorX / (float)((float)this.Width / 800.0f));
             }
         }
         public int __gameCursorY
         {
             get
             {
-                return (int)(__cursorY / (float)((float)this.Height / 480.0f));
+                return (int)(__cursorY / (float)((float)this.Height / 600.0f));
             }
         }
         public static bool menu = true;
@@ -126,6 +128,7 @@ namespace PGJ002
         public static Timer waveTimer = new Timer();
         public static Timer gameTimer = new Timer();
         public static Timer animTimer = new Timer();
+        public static Timer menuTimer = new Timer();
         public static int counter;
         public static string timer;
 
@@ -145,7 +148,11 @@ namespace PGJ002
                     menu = false;
                     ingame = true;
                     PlayClick();
-                    Music.SetMusic("gameplay_track_2");
+                    Random r = new Random();
+                    if (r.Next(100) >= 50)
+                        Music.SetMusic("gameplay_track_2");
+                    else
+                        Music.SetMusic("gameplay_track_1");
                     waveTimer.Interval = 1000;
                     gameTimer.Interval = 17;
                     animTimer.Interval = 100;
@@ -155,6 +162,7 @@ namespace PGJ002
                     gameTimer.Start();
                     waveTimer.Start();
                     animTimer.Start();
+                    menuTimer.Stop();
                     this.Refresh();
                 }
                 else if (optionsbuttonrect.Contains(new Point(__cursorX, __cursorY)) == true)
@@ -247,16 +255,26 @@ namespace PGJ002
             InitializeComponent();
             this.DoubleBuffered = true;
             this.Location = new Point(0, 0);
-            this.Width = 640;
-            this.Height = 480;
+            this.Width = 800;
+            this.Height = 600;
             _eyeXHost.Start();
             lightlyFilteredGazeDataStream.Next += (s, e) => { eyeTrackerX = e.X; eyeTrackerY = e.Y; };
             RefreshAssets();
             this.KeyDown += MainForm_KeyDown;
             Music.SetMusic("menu_sound_2_proper");
+            menuTimer.Interval = 350;
+            menuTimer.Tick += MenuTimer_Tick;
+            menuTimer.Start();
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
             //s.PlayLooping();
         }
+
+        private void MenuTimer_Tick(object sender, EventArgs e)
+        {
+            menuBackground.AdvanceFrame();
+            this.Refresh();
+        }
+
         public enum Mode
         {
             Build,
@@ -316,10 +334,11 @@ namespace PGJ002
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             if (menu == true)
             {
-                Rectangle logorect = new Rectangle((int)(0.35 * __width), (int)(0.1 * __height), (int)(0.3 * __width), (int)(0.2 * __height));
-                startbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.30 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
-                optionsbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.50 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
-                quitbuttonrect = new Rectangle((int)(0.28 * this.Size.Width), (int)(0.70 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                Rectangle logorect = new Rectangle((int)(0.15 * __width), (int)(0.1 * __height), (int)(0.3 * __height), (int)(0.2 * __height));
+                startbuttonrect = new Rectangle((int)(0.1 * this.Size.Width), (int)(0.30 * this.Size.Height), (int)(0.40 * this.Size.Height), (int)(0.20 * this.Size.Height));
+                optionsbuttonrect = new Rectangle((int)(0.1 * this.Size.Width), (int)(0.409 * this.Size.Height), (int)(0.40 * this.Size.Height), (int)(0.20 * this.Size.Height));
+                quitbuttonrect = new Rectangle((int)(0.1 * this.Size.Width), (int)(0.518 * this.Size.Height), (int)(0.40 * this.Size.Height), (int)(0.20 * this.Size.Height));
+                e.Graphics.DrawImage(menuBackground.GetCurrentFrame(), new Rectangle(0, 0, __width, __height));
                 e.Graphics.DrawImage(gameLogo, logorect);
                 e.Graphics.DrawImage(startbutton, startbuttonrect);
                 e.Graphics.DrawImage(optionsbutton, optionsbuttonrect);
@@ -338,8 +357,8 @@ namespace PGJ002
                 {
                     case 0:
                         e.Graphics.DrawImage(resolutionoption0, resolutionoptionsrect);
-                        this.Width = 640;
-                        this.Height = 480;
+                        this.Width = 800;
+                        this.Height = 600;
                         break;
                     case 1:
                         e.Graphics.DrawImage(resolutionoption1, resolutionoptionsrect);
@@ -369,8 +388,8 @@ namespace PGJ002
                 using (Graphics gameG = Graphics.FromImage(gameB))
                 {
                     gameG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 640, 480));
-                    gameG.DrawImage(bGrassBG.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                    gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 800, 600));
+                    gameG.DrawImage(bGrassBG.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                     gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
                     //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
@@ -435,16 +454,16 @@ namespace PGJ002
                         switch (currentDisaster)
                         {
                             case Disaster.Earthquake:
-                                gameG.DrawImage(bEarthquake.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                gameG.DrawImage(bEarthquake.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
                             case Disaster.Fire:
-                                gameG.DrawImage(bFireWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                gameG.DrawImage(bFireWaves.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
                             case Disaster.Water:
-                                gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
                             case Disaster.Wind:
-                                gameG.DrawImage(bTornado.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                gameG.DrawImage(bTornado.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
                         }
                     }
@@ -492,8 +511,10 @@ namespace PGJ002
             gameLogo = new Bitmap(FileSystem.GetBitmapFromFile("island_of_waves"));
             opLabel = new Bitmap(FileSystem.GetBitmapFromFile("op"));
 
+            menuBackground = FileSystem.GetAnimSpriteFromFiles("Background_Animation 1", 4);
+
             bWaterWaves = FileSystem.GetAnimSpriteFromFiles("game/wave_Animation 1", 5);
-            bFireWaves = FileSystem.GetAnimSpriteFromFiles("game/fire_Animation 1", 5);
+            bFireWaves = FileSystem.GetAnimSpriteFromFiles("game/fire Animation", 4);
             bTornado = FileSystem.GetAnimSpriteFromFiles("game/wind_Animation 1", 5);
             bEarthquake = FileSystem.GetAnimSpriteFromFiles("game/earth_Animation 1", 5);
 
@@ -545,7 +566,7 @@ namespace PGJ002
             if (counter % nextDisaster == 0)
             {
                 counter = 0;
-                nextDisaster = r.Next(20,50);
+                nextDisaster = r.Next(10,25);
                 currentDisaster = nextDis;
                 assignedNextDis = false;
                 playedStinger = false;
@@ -628,7 +649,7 @@ namespace PGJ002
                         bEarthquake.AdvanceFrame();
                         break;
                     case Disaster.Fire:
-                        if (bFireWaves.currentFrame == 4)
+                        if (bFireWaves.currentFrame == 3)
                         {
                             currentDisaster = Disaster.None;
                         }
@@ -659,7 +680,7 @@ namespace PGJ002
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
-            gameB = new Bitmap(640, 480);
+            gameB = new Bitmap(800, 600);
             this.CenterToScreen();
             this.Refresh();
         }
