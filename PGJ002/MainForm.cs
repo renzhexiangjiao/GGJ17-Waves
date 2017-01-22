@@ -244,6 +244,7 @@ namespace PGJ002
                     else if (currentMode == Mode.Bulldoze && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
                         Entity.entList.RemoveAt(Entity.entList.FindIndex(x => x.PositionX == tX && x.PositionY == tY));
+                        Sound.PlayASound("break_sound_1");
                     }
                     else if (currentMode == Mode.Repair && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
