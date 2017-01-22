@@ -62,8 +62,9 @@ namespace PGJ002
         public static Bitmap bHouseLarge;
         public static Bitmap bHouseMedium;
         public static Bitmap bHouseSmall;
-        
-        
+
+        public static Bitmap bBambooWall;
+        public static Bitmap bBambooWallFG;
         public static Bitmap bGrassBG;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
@@ -165,6 +166,7 @@ namespace PGJ002
                     waveTimer.Start();
                     animTimer.Start();
                     menuTimer.Stop();
+                    Entity.ResetWorld();
                     this.Refresh();
                 }
                 else if (optionsbuttonrect.Contains(new Point(__cursorX, __cursorY)) == true)
@@ -229,7 +231,7 @@ namespace PGJ002
                         }
                     }
                 }
-                if (isCursorOnTile)
+                if (isCursorOnTile && Entity.population != 0)
                 {
                     if (currentMode == Mode.Build && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
                     {
@@ -296,35 +298,38 @@ namespace PGJ002
             {
                 if (e.KeyCode == Keys.Escape)
                     Entity.ResetWorld();
-                if (e.KeyCode == Keys.Right)
-                    currentSelection++;
-                if (e.KeyCode == Keys.Left)
-                    currentSelection--;
-
-                if (e.KeyCode == Keys.Up)
-                    currentMode++;
-                if (e.KeyCode == Keys.Down)
-                    currentMode--;
-
-                if (e.KeyCode == Keys.ControlKey)
-                    lockCursor = !lockCursor;
-
-                if(currentSelection >= EntType.ent_max)
+                if (Entity.population != 0)
                 {
-                    currentSelection = 0;
-                }
-                if(currentSelection < 0)
-                {
-                    currentSelection = EntType.ent_max - 1;
-                }
+                    if (e.KeyCode == Keys.Right)
+                        currentSelection++;
+                    if (e.KeyCode == Keys.Left)
+                        currentSelection--;
 
-                if (currentMode >= Mode.mode_max)
-                {
-                    currentMode = 0;
-                }
-                if (currentMode < 0)
-                {
-                    currentMode = Mode.mode_max - 1;
+                    if (e.KeyCode == Keys.Up)
+                        currentMode++;
+                    if (e.KeyCode == Keys.Down)
+                        currentMode--;
+
+                    if (e.KeyCode == Keys.ControlKey)
+                        lockCursor = !lockCursor;
+
+                    if (currentSelection >= EntType.ent_max)
+                    {
+                        currentSelection = 0;
+                    }
+                    if (currentSelection < 0)
+                    {
+                        currentSelection = EntType.ent_max - 1;
+                    }
+
+                    if (currentMode >= Mode.mode_max)
+                    {
+                        currentMode = 0;
+                    }
+                    if (currentMode < 0)
+                    {
+                        currentMode = Mode.mode_max - 1;
+                    }
                 }
             }
         }
@@ -356,6 +361,7 @@ namespace PGJ002
                 languagelabelrect = new Rectangle((int)(0.04 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 languageoptionsrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.37 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
                 backbuttonrect = new Rectangle((int)(0.52 * this.Size.Width), (int)(0.6953 * this.Size.Height), (int)(0.44 * this.Size.Width), (int)(0.26 * this.Size.Height));
+                e.Graphics.DrawImage(menuBackground.GetCurrentFrame(), new Rectangle(0, 0, __width, __height));
                 e.Graphics.DrawImage(resolutionlabel, resolutionlabelrect);
                 switch (resolutionoption)
                 {
@@ -394,6 +400,7 @@ namespace PGJ002
                     gameG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                     gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 800, 600));
                     gameG.DrawImage(bGrassBG, new Rectangle(0, 0, 800, 600));
+                    gameG.DrawImage(bBambooWall, new Rectangle(0, 0, 800, 600));
                     gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                     //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
@@ -461,6 +468,7 @@ namespace PGJ002
                     gameG.DrawImage(bHouseSmall, Tiles.GetTilePoint(2, 3));
                     */
                     //gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                    gameG.DrawImage(bBambooWallFG, new Rectangle(0, 0, 800, 600));
                     if (currentDisaster != Disaster.None)
                     {
                         switch (currentDisaster)
@@ -482,6 +490,13 @@ namespace PGJ002
                     //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.White), new Point(__gameCursorX, __gameCursorY));
                     if (Program.lang == Localization.Language.english)
                     {
+                        if (Entity.population == 0)
+                        {
+                            gameG.DrawString("PRESS ESC TO RESTART", new Font(FontFamily.GenericMonospace,
+                 16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
+                            gameG.DrawString("GAME\nOVER", new Font(FontFamily.GenericMonospace,
+                 72.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 200));
+                        }
                         gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                     12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
@@ -500,6 +515,13 @@ namespace PGJ002
                         }
                     } else if(Program.lang == Localization.Language.polish)
                     {
+                        if (Entity.population == 0)
+                        {
+                            gameG.DrawString("WCIŚNIJ ESC ABY POWTÓRZYĆ", new Font(FontFamily.GenericMonospace,
+                 16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
+                            gameG.DrawString("KONIEC\n GRY", new Font(FontFamily.GenericMonospace,
+                 72.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 200));
+                        }
                         gameG.DrawString("Obecny budynek: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
@@ -519,6 +541,13 @@ namespace PGJ002
                     }
                     else if (Program.lang == Localization.Language.zhongwen)  // WYMAGA TŁUMACZENIA
                     {
+                        if (Entity.population == 0)
+                        {
+                            gameG.DrawString("PRESS ESCAPE TO RESTART", new Font(FontFamily.GenericMonospace,
+                 16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
+                            gameG.DrawString("GAME\nOVER", new Font(FontFamily.GenericMonospace,
+                 72.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 200));
+                        }
                         gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
@@ -582,6 +611,8 @@ namespace PGJ002
             bHouseSmall = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_sm"));
 
             bGrassBG = new Bitmap(FileSystem.GetBitmapFromFile("game/map_empty"));
+            bBambooWall = new Bitmap(FileSystem.GetBitmapFromFile("game/BambooWall"));
+            bBambooWallFG = new Bitmap(FileSystem.GetBitmapFromFile("game/BambooWall_fg"));
         }
         public enum Disaster
         {
