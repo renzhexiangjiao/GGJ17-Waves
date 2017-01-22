@@ -575,7 +575,7 @@ namespace PGJ002
 
         public void RefreshAssets()
         {
-            h1 = new Bitmap(FileSystem.GetBitmapFromFile("h1"));
+            //h1 = new Bitmap(FileSystem.GetBitmapFromFile("h1"));
 
             startbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("startbutton"));
             optionsbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("optionsbutton"));
