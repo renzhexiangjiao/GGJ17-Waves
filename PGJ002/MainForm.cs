@@ -37,19 +37,29 @@ namespace PGJ002
 
         public static byte languageoption = 1;
 
+        public static Bitmap opLabel;
+
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
 
         public static FormsEyeXHost _eyeXHost = new FormsEyeXHost();
 
         // GRA
+        public static AnimatedSprite bWaterWaves;
+        public static AnimatedSprite bFireWaves;
+        public static AnimatedSprite bEarthquake;
+        public static AnimatedSprite bTornado;
+
         public static AnimatedSprite bSandMaker;
         public static AnimatedSprite bBambooFarmer;
         public static AnimatedSprite bCalciumMine;
         public static AnimatedSprite bIronForge;
+        
         public static Bitmap bHouseLarge;
         public static Bitmap bHouseMedium;
         public static Bitmap bHouseSmall;
+
+        public static Bitmap bGrassBG;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
         public static bool fullscreenOn = false;
@@ -98,14 +108,14 @@ namespace PGJ002
         {
             get
             {
-                return __cursorX;
+                return (int)(__cursorX / (float)((float)this.Width / 640.0f));
             }
         }
         public int __gameCursorY
         {
             get
             {
-                return __cursorY;
+                return (int)(__cursorY / (float)((float)this.Height / 480.0f));
             }
         }
         public static bool menu = true;
@@ -207,9 +217,25 @@ namespace PGJ002
                         }
                     }
                 }
-                if(isCursorOnTile && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
+                if (isCursorOnTile)
                 {
-                    Entity.CreateEntity(currentSelection, tX, tY);
+                    if (currentMode == Mode.Build && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
+                    {
+                        Entity.CreateEntity(currentSelection, tX, tY);
+                    }
+                    else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
+                    {
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).level++;
+                    }
+                    else if (currentMode == Mode.Bulldoze && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
+                    {
+                        Entity.entList.RemoveAt(Entity.entList.FindIndex(x => x.PositionX == tX && x.PositionY == tY));
+                    }
+                    else if (currentMode == Mode.Repair && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
+                    {
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health += 5;
+                        Entity.add_bamboo -= 15;
+                    }
                 }
             }
         }
@@ -229,17 +255,32 @@ namespace PGJ002
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
             //s.PlayLooping();
         }
+        public enum Mode
+        {
+            Build,
+            Repair,
+            Upgrade,
+            Bulldoze,
+            mode_max
+        };
         public EntType currentSelection;
+        public Mode currentMode; 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.ShiftKey)
                 Form1_Click("eyetracker", null);
             if(ingame)
             {
-                if(e.KeyCode == Keys.Right)
+                if (e.KeyCode == Keys.Right)
                     currentSelection++;
                 if (e.KeyCode == Keys.Left)
                     currentSelection--;
+
+                if (e.KeyCode == Keys.Up)
+                    currentMode++;
+                if (e.KeyCode == Keys.Down)
+                    currentMode--;
+
                 if(currentSelection >= EntType.ent_max)
                 {
                     currentSelection = 0;
@@ -248,9 +289,19 @@ namespace PGJ002
                 {
                     currentSelection = EntType.ent_max - 1;
                 }
+
+                if (currentMode >= Mode.mode_max)
+                {
+                    currentMode = 0;
+                }
+                if (currentMode < 0)
+                {
+                    currentMode = Mode.mode_max - 1;
+                }
             }
         }
-
+        int lastPosX = 0;
+        int lastPosY = 0;
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
@@ -262,6 +313,7 @@ namespace PGJ002
                 e.Graphics.DrawImage(startbutton, startbuttonrect);
                 e.Graphics.DrawImage(optionsbutton, optionsbuttonrect);
                 e.Graphics.DrawImage(quitbutton, quitbuttonrect);
+                e.Graphics.DrawImage(opLabel, new Point(4, __height - 20));
             }
             else if (options == true)
             {
@@ -305,12 +357,13 @@ namespace PGJ002
                 
                 using (Graphics gameG = Graphics.FromImage(gameB))
                 {
-
+                    gameG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                     gameG.FillRectangle(new SolidBrush(Color.Azure), new Rectangle(0, 0, 640, 480));
-                    gameG.DrawString(fps.ToString(), new Font(FontFamily.GenericMonospace,
+                    gameG.DrawImage(bGrassBG, new Rectangle(0, 0, 640, 480));
+                    gameG.DrawString(fps.ToString()+ " FPS", new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
-                    gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
-                12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
+                    //gameG.DrawString(timer, new Font(FontFamily.GenericMonospace,
+                //12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(55, 0));
                     bool isCursorOnTile = false;
                     int tX = 0;
                     int tY = 0;
@@ -330,11 +383,12 @@ namespace PGJ002
                     if (isCursorOnTile)
                     {
                         Point[] t = Tiles.GetTilePolygon(tX, tY);
-                        if((fc % 16)>8 && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
-                            gameG.DrawImage(Entity.GetSpriteForType(currentSelection), Tiles.GetTilePoint(tX, tY));
                         gameG.DrawPolygon(new Pen(Color.Green, fc % 7), t);
+                        if (currentMode == Mode.Build && (fc % 16)>8 && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
+                            gameG.DrawImage(Entity.GetSpriteForType(currentSelection), Tiles.GetTilePoint(tX, tY));
                     }
-                    foreach(Entity ent in Entity.entList)
+                    Entity selectedEnt = Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY);
+                    foreach (Entity ent in Entity.entList)
                     {
                         if(ent.isAnimated)
                         {
@@ -364,9 +418,42 @@ namespace PGJ002
                     gameG.DrawImage(bHouseMedium, Tiles.GetTilePoint(1, 3));
                     gameG.DrawImage(bHouseSmall, Tiles.GetTilePoint(2, 3));
                     */
-                    gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.Black), new Point(__gameCursorX, __gameCursorY));
-                    gameG.DrawString(Enum.GetName(typeof(EntType), currentSelection), new Font(FontFamily.GenericMonospace,
+                    //gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                    if (currentDisaster != Disaster.None)
+                    {
+                        switch (currentDisaster)
+                        {
+                            case Disaster.Earthquake:
+                                gameG.DrawImage(bEarthquake.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                break;
+                            case Disaster.Fire:
+                                gameG.DrawImage(bFireWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                break;
+                            case Disaster.Water:
+                                gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                break;
+                            case Disaster.Wind:
+                                gameG.DrawImage(bTornado.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
+                                break;
+                        }
+                    }
+                    //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.Black), new Point(__gameCursorX, __gameCursorY));
+                    gameG.DrawString("Building to build: "+Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(110, 0));
+                    if(selectedEnt != null && !useEyeTracker)
+                        gameG.DrawString("\nPopulation: "+Entity.population.ToString()+"\nCash: "+Entity.cash.ToString()+" YEN\nBamboo: "+Entity.bamboo.ToString()+" kg\nSand: "+Entity.sand.ToString()+" kg\nCalcium: "+Entity.calcium.ToString()+" kg\nIron: "+Entity.iron+" kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: "+ Enum.GetName(typeof(Mode), currentMode)+"\nSelected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
+                    else
+                        gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nCalcium: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(0, 0));
+                    if (selectedEnt != null && useEyeTracker)
+                        gameG.DrawString("Selected building: "+ Entity.GetNameForType(selectedEnt.type) + "\nHealth: "+selectedEnt.health.ToString()+"\nLevel: "+(1+selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+               12.0F, FontStyle.Bold), new SolidBrush(Color.Black), new Point(lastPosX,lastPosY));
+                    else
+                    {
+                        lastPosX = __gameCursorX;
+                        lastPosY = __gameCursorY;
+                    }
                 }
                 var gameRect = new Rectangle(0, 0, __width, __height);
                 e.Graphics.DrawImage(gameB, gameRect);
@@ -391,6 +478,13 @@ namespace PGJ002
             languagelabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("languagelabel"));
             languageoptionb = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("currentlanguage"));
 
+            opLabel = new Bitmap(FileSystem.GetBitmapFromFile("op"));
+
+            bWaterWaves = FileSystem.GetAnimSpriteFromFiles("game/wave_Animation 1", 5);
+            bFireWaves = FileSystem.GetAnimSpriteFromFiles("game/fire_Animation 1", 5);
+            bTornado = FileSystem.GetAnimSpriteFromFiles("game/wind_Animation 1", 5);
+            bEarthquake = FileSystem.GetAnimSpriteFromFiles("game/earth_Animation 1", 5);
+
             bSandMaker = FileSystem.GetAnimSpriteFromFiles("game/jp_snd_mkr", 4);
             bBambooFarmer = FileSystem.GetAnimSpriteFromFiles("game/jp_bmb_frm", 4);
             bCalciumMine = FileSystem.GetAnimSpriteFromFiles("game/jp_clc_min", 4);
@@ -399,18 +493,87 @@ namespace PGJ002
             bHouseLarge = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_lg"));
             bHouseMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_md"));
             bHouseSmall = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_sm"));
+
+            bGrassBG = new Bitmap(FileSystem.GetBitmapFromFile("game/grass_bg"));
         }
+        public enum Disaster
+        {
+            None,
+            Water,
+            Fire,
+            Wind,
+            Earthquake
+        }
+        public int nextDisaster = 30;
+        public Disaster currentDisaster = Disaster.None;
         private void waveTimer_OnTick(object sender, EventArgs e)
         {
             fps = fc % prevfc;
             prevfc = fc;
             counter++;
-            if (counter % 20 == 0)
+            if (counter % nextDisaster == 0)
                 timer = "0:00";
-            else if (counter % 20 > 10)
-                timer = "0:0" + (20 - counter % 20).ToString();
+            else if (counter % nextDisaster > 10)
+                timer = "0:0" + (nextDisaster - counter % nextDisaster).ToString();
             else
-                timer = "0:" + (20 - counter % 20).ToString();
+                timer = "0:" + (nextDisaster - counter % nextDisaster).ToString();
+            if(counter % nextDisaster == 0)
+            {
+                Random r = new Random();
+                counter = 0;
+                nextDisaster = r.Next(20,60);
+                currentDisaster = (Disaster)r.Next(Enum.GetValues(typeof(Disaster)).Length);
+                for(int i = 0; i < Entity.entList.Count; i++)
+                {
+                    Entity ent = Entity.entList[i];
+                    ent.health -= r.Next(100);
+                    if (ent.health < 0)
+                        Entity.entList.Remove(ent);
+                }
+            }
+            int req_population = 0;
+            foreach (Entity ent in Entity.entList)
+            {
+                req_population += ent.require_population;
+            }
+            foreach (Entity ent in Entity.entList)
+            {
+                Entity.add_cash -= ent.cost;
+                ent.cost = 0;
+                Entity.add_bamboo -= ent.bamboo_cost;
+                ent.bamboo_cost = 0;
+                Entity.add_iron -= ent.iron_cost;
+                ent.iron_cost = 0;
+                Entity.add_sand -= ent.sand_cost;
+                ent.sand_cost = 0;
+                Entity.add_calcium -= ent.calcium_cost;
+                ent.calcium_cost = 0;
+                switch (ent.type)
+                {
+                    case EntType.jp_house_lg:
+                        Entity.add_cash += (int)((50 + 5 * ent.level));
+                        break;
+                    case EntType.jp_house_md:
+                        Entity.add_cash += (int)((20 + 2 * ent.level));
+                        break;
+                    case EntType.jp_house_sm:
+                        Entity.add_cash += (int)((10 + 1 * ent.level));
+                        break;
+
+                    case EntType.jp_bmb_frm:
+                        Entity.add_bamboo += (int)((25 + 7 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
+                        break;
+                    case EntType.jp_snd_mkr:
+                        Entity.add_sand += (int)((30 + 5 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
+                        break;
+                    case EntType.jp_irn_frg:
+                        Entity.add_iron += (int)((15 + 3 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
+                        break;
+                    case EntType.jp_clc_min:
+                        Entity.add_calcium += (int)((15 + 3 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
+                        break;
+                }
+            }
             this.Refresh();
         }
         string f;
@@ -423,6 +586,40 @@ namespace PGJ002
             bBambooFarmer.AdvanceFrame();
             bCalciumMine.AdvanceFrame();
             bIronForge.AdvanceFrame();
+            if (currentDisaster != Disaster.None)
+            {
+                switch (currentDisaster)
+                {
+                    case Disaster.Earthquake:
+                        if(bEarthquake.currentFrame == 4)
+                        {
+                            currentDisaster = Disaster.None;
+                        }
+                        bEarthquake.AdvanceFrame();
+                        break;
+                    case Disaster.Fire:
+                        if (bFireWaves.currentFrame == 4)
+                        {
+                            currentDisaster = Disaster.None;
+                        }
+                        bFireWaves.AdvanceFrame();
+                        break;
+                    case Disaster.Water:
+                        if (bWaterWaves.currentFrame == 4)
+                        {
+                            currentDisaster = Disaster.None;
+                        }
+                        bWaterWaves.AdvanceFrame();
+                        break;
+                    case Disaster.Wind:
+                        if (bTornado.currentFrame == 4)
+                        {
+                            currentDisaster = Disaster.None;
+                        }
+                        bTornado.AdvanceFrame();
+                        break;
+                }
+            }
         }
         private void GameTimer_Tick(object sender, EventArgs e)
         {
@@ -433,6 +630,7 @@ namespace PGJ002
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
             gameB = new Bitmap(640, 480);
+            this.CenterToScreen();
             this.Refresh();
         }
     }

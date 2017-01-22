@@ -12,8 +12,10 @@ namespace PGJ002
         public string alias;
         public Bitmap[] frames;
         public int currentFrame;
+        public int previousFrame = 0;
         public void AdvanceFrame()
         {
+            previousFrame = currentFrame;
             currentFrame++;
             if (currentFrame >= frames.Length)
                 currentFrame = 0;

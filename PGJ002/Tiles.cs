@@ -12,7 +12,7 @@ namespace PGJ002
         static int offsetX = 60;
         static int offsetY = 60;
         static int oX = 0;
-        static int oY = 140;
+        static int oY = 160;
         /// <summary>
         /// Determines if the given point is inside the polygon
         /// </summary>

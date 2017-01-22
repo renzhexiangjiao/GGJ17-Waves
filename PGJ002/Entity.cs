@@ -26,17 +26,88 @@ namespace PGJ002
     {
         // GLOBAL
         public static List<Entity> entList = new List<Entity>();
-        public static int population = 0;
-        public static int cash = 1000;
-        public static int bamboo = 1250;
-        public static int sand = 1500;
-        public static int calcium = 500;
-        public static int iron = 500;
+        public static int population
+        {
+            get
+            {
+                int r = 0;
+                foreach (Entity ent in Entity.entList)
+                {
+                    r += ent.adds_to_population + 1*ent.level;
+                }
+                return r;
+            }
+        }
+        public static int add_cash = 0;
+        public static int add_bamboo = 0;
+        public static int add_calcium = 0;
+        public static int add_iron = 0;
+        public static int add_sand = 0;
+        public static int cash
+        {
+            get
+            {
+                int r = 0;
+                foreach(Entity ent in Entity.entList)
+                {
+                    r += ent.cost + 50*ent.level;
+                }
+                return add_cash+1000-r;
+            }
+        }
+        public static int bamboo
+        {
+            get
+            {
+                int r = 0;
+                foreach (Entity ent in Entity.entList)
+                {
+                    r += ent.bamboo_cost + 100 * ent.level;
+                }
+                return add_bamboo + 1250 - r;
+            }
+        }
+        public static int sand
+        {
+            get
+            {
+                int r = 0;
+                foreach (Entity ent in Entity.entList)
+                {
+                    r += ent.sand_cost + 100 * ent.level;
+                }
+                return add_sand + 1500 - r;
+            }
+        }
+        public static int calcium
+        {
+            get
+            {
+                int r = 0;
+                foreach (Entity ent in Entity.entList)
+                {
+                    r += ent.calcium_cost + 75 * ent.level;
+                }
+                return add_calcium + 500 - r;
+            }
+        }
+        public static int iron
+        {
+            get
+            {
+                int r = 0;
+                foreach (Entity ent in Entity.entList)
+                {
+                    r += ent.iron_cost + 40 * ent.level;
+                }
+                return add_iron + 500 - r;
+            }
+        }
 
         // ENT-SPECIFIC
         public EntType type;
         public int health;
-        public int level = 1;
+        public int level = 0;
         public int PositionX = 0;
         public int PositionY = 0;
         public bool isAnimated = false;
@@ -124,12 +195,24 @@ namespace PGJ002
                     animSprite = MainForm.bSandMaker;
                     break;
                 case EntType.jp_house_lg:
+                    bamboo_cost = 800;
+                    iron_cost = 275;
+                    calcium_cost = 180;
+                    sand_cost = 90;
                     sprite = MainForm.bHouseLarge;
                     break;
                 case EntType.jp_house_md:
+                    bamboo_cost = 500;
+                    iron_cost = 150;
+                    calcium_cost = 120;
+                    sand_cost = 40;
                     sprite = MainForm.bHouseMedium;
                     break;
                 case EntType.jp_house_sm:
+                    bamboo_cost = 300;
+                    iron_cost = 80;
+                    calcium_cost = 80;
+                    sand_cost = 10;
                     sprite = MainForm.bHouseSmall;
                     break;
             }
@@ -162,6 +245,35 @@ namespace PGJ002
                     break;
             }
             return sprite;
+        }
+        public static string GetNameForType(EntType type)
+        {
+            string n = "null";
+            switch (type)
+            {
+                case EntType.jp_bmb_frm:
+                    n = "Bamboo Farm";
+                    break;
+                case EntType.jp_clc_min:
+                    n = "Calcium Mine";
+                    break;
+                case EntType.jp_irn_frg:
+                    n = "Iron Forge";
+                    break;
+                case EntType.jp_snd_mkr:
+                    n = "Sand Maker";
+                    break;
+                case EntType.jp_house_lg:
+                    n = "House (Large)";
+                    break;
+                case EntType.jp_house_md:
+                    n = "House (Medium)";
+                    break;
+                case EntType.jp_house_sm:
+                    n = "House (Small)";
+                    break;
+            }
+            return n;
         }
     }
 }
