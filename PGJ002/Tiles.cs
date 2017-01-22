@@ -87,7 +87,7 @@ namespace PGJ002
         }
         public static Point GetTilePointSelection(int x, int y)
         {
-            return new Point((x > 1 ? 16 : 0) + oX + (x * offsetX) + (y * (offsetY + 10)), x * 3 + oY + 48 + (y * ((10) - offsetY)) + (x * (offsetX)));
+            return new Point((x > 1 ? 16 : 0) + (y > 2 ? 16 : 0) + oX + (x * offsetX) + (y * (offsetY + 10)), (x > 1 ? 16 : 0) + (y > 2 ? -16 : 0) + oY + 48 + (y * ((10) - offsetY)) + (x * (offsetX)));
         }
         public static Point[] GetTilePolygon(int x, int y)
         {
