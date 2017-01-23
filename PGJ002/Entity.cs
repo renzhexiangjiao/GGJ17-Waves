@@ -136,6 +136,8 @@ namespace PGJ002
         public static void ResetWorld()
         {
             MainForm.nextDisaster = 20;
+            MainForm.counter = 0;
+            MainForm.timer = "20";
             entList.Clear();
             add_bamboo = 0;
             add_calcium = 0;
