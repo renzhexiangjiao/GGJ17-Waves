@@ -23,6 +23,7 @@ namespace PGJ002
         public static Bitmap optionsbutton;
         public static Bitmap quitbutton;
         public static Bitmap backbutton;
+        public static Bitmap backtomenubutton;
 
         public static Bitmap resolutionlabel;
         public static Bitmap resolutionoption0;
@@ -44,6 +45,7 @@ namespace PGJ002
 
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
+        public static Rectangle backtomenubuttonrect;
 
         public static FormsEyeXHost _eyeXHost = new FormsEyeXHost();
 
@@ -69,6 +71,8 @@ namespace PGJ002
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
         public static bool fullscreenOn = false;
+
+        public static int nextDisaster;
 
         public int __width
         {
@@ -159,9 +163,6 @@ namespace PGJ002
                     waveTimer.Interval = 1000;
                     gameTimer.Interval = 17;
                     animTimer.Interval = 100;
-                    animTimer.Tick += new System.EventHandler(this.AnimTimer_Tick);
-                    gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
-                    waveTimer.Tick += new System.EventHandler(this.waveTimer_OnTick);
                     gameTimer.Start();
                     waveTimer.Start();
                     animTimer.Start();
@@ -215,6 +216,19 @@ namespace PGJ002
             }
             else if(ingame == true)
             {
+                if(backtomenubuttonrect.Contains(new Point(__cursorX, __cursorY)) == true)
+                {
+                    ingame = false;
+                    menu = true;
+                    PlayClick();
+                    Music.SetMusic("menu_sound_2_proper");
+                    gameTimer.Stop();
+                    waveTimer.Stop();
+                    animTimer.Stop();
+                    menuTimer.Start();
+                    RefreshAssets();
+                    this.Refresh();
+                }
                 if (!lockCursor)
                 {
                     for (int i = 0; i < 5; i++)
@@ -246,10 +260,15 @@ namespace PGJ002
                         Entity.entList.RemoveAt(Entity.entList.FindIndex(x => x.PositionX == tX && x.PositionY == tY));
                         Sound.PlayASound("break_sound_1");
                     }
-                    else if (currentMode == Mode.Repair && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
+                    else if (currentMode == Mode.Repair && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health != Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).maxhealth)
                     {
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health += 5;
-                        Entity.add_bamboo -= 15;
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health += 20;
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health = Math.Min(Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health, Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).maxhealth);
+                        Entity.add_bamboo -= 60;
+                        Entity.add_calcium -= 60;
+                        Entity.add_sand -= 60;
+                        Entity.add_iron -= 60;
+                        Entity.add_cash -= 60;
                     }
                 }
             }
@@ -268,6 +287,9 @@ namespace PGJ002
             this.KeyDown += MainForm_KeyDown;
             Music.SetMusic("menu_sound_2_proper");
             menuTimer.Interval = 350;
+            animTimer.Tick += new System.EventHandler(this.AnimTimer_Tick);
+            gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
+            waveTimer.Tick += new System.EventHandler(this.waveTimer_OnTick);
             menuTimer.Tick += MenuTimer_Tick;
             menuTimer.Start();
             //SoundPlayer s = new SoundPlayer("music/menu.wav");
@@ -394,7 +416,7 @@ namespace PGJ002
             else if (ingame == true)
             {
                 //this.DoubleBuffered = false;
-                
+                backtomenubuttonrect = new Rectangle((int)(0.8 * this.Size.Width), (int)(-0.04*this.Size.Height), (int)(0.2 * this.Size.Width), (int)(0.1 * this.Size.Height));
                 
                 using (Graphics gameG = Graphics.FromImage(gameB))
                 {
@@ -470,6 +492,7 @@ namespace PGJ002
                     */
                     //gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
                     gameG.DrawImage(bBambooWallFG, new Rectangle(0, 0, 800, 600));
+                    gameG.DrawImage(backtomenubutton, backtomenubuttonrect);
                     if (currentDisaster != Disaster.None)
                     {
                         switch (currentDisaster)
@@ -501,10 +524,10 @@ namespace PGJ002
                         gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                     12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
-                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n"+timer+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         else
-                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n"+timer+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         if (selectedEnt != null && (useEyeTracker && !lockCursor))
                             gameG.DrawString("Selected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
@@ -581,6 +604,7 @@ namespace PGJ002
             optionsbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("optionsbutton"));
             quitbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("quitbutton"));
             backbutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("backbutton"));
+            backtomenubutton = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("backtomenubutton"));
 
             resolutionlabel = new Bitmap(FileSystem.GetLocalizedBitmapFromFile("resolutionlabel"));
             resolutionoption0 = new Bitmap(FileSystem.GetBitmapFromFile("800x600"));
@@ -623,7 +647,6 @@ namespace PGJ002
             Wind,
             Earthquake
         }
-        public int nextDisaster = 65;
         public Disaster currentDisaster = Disaster.None;
         public Disaster nextDis;
         public bool playedStinger = false;
@@ -634,6 +657,7 @@ namespace PGJ002
             prevfc = fc;
             counter++;
             Random r = new Random();
+            timer = (nextDisaster-counter).ToString();
             if (!assignedNextDis)
             {
                 nextDis = (Disaster)r.Next((int)Disaster.None + 1, Enum.GetValues(typeof(Disaster)).Length);
@@ -652,14 +676,14 @@ namespace PGJ002
             if (counter % nextDisaster == 0)
             {
                 counter = 0;
-                nextDisaster = r.Next(10,25);
+                nextDisaster = 20;
                 currentDisaster = nextDis;
                 assignedNextDis = false;
                 playedStinger = false;
                 for(int i = 0; i < Entity.entList.Count; i++)
                 {
                     Entity ent = Entity.entList[i];
-                    ent.health -= r.Next(100);
+                    ent.health -= r.Next(25, 75);
                     if (ent.health < 0)
                     {
                         Entity.entList.Remove(ent);
