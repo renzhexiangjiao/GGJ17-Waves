@@ -59,8 +59,10 @@ namespace PGJ002
         public static AnimatedSprite bBambooFarmer;
         public static AnimatedSprite bCalciumMine;
         public static AnimatedSprite bIronForge;
-        public static Bitmap bUpgrade;
-        
+        public static Bitmap bUpgradeLarge;
+        public static Bitmap bUpgradeMedium;
+        public static Bitmap bUpgradeSmall;
+
         public static Bitmap bHouseLarge;
         public static Bitmap bHouseMedium;
         public static Bitmap bHouseSmall;
@@ -251,9 +253,9 @@ namespace PGJ002
                     {
                         Entity.CreateEntity(currentSelection, tX, tY);
                     }
-                    else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY && (x.type == EntType.jp_bmb_frm || x.type == EntType.jp_clc_min || x.type == EntType.jp_irn_frg || x.type == EntType.jp_snd_mkr)) != null)
+                    else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY && (x.type == EntType.jp_bmb_frm || x.type == EntType.jp_clc_min || x.type == EntType.jp_irn_frg || x.type == EntType.jp_snd_mkr)).level++;
+                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).level++;
                     }
                     else if (currentMode == Mode.Bulldoze && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
@@ -465,10 +467,31 @@ namespace PGJ002
                             {
                                 gameG.DrawImage(ent.sprite, Tiles.GetTilePoint(ent.PositionX, ent.PositionY));
                             }
-                            for (int i = 0; i < ent.level; i++)
+                            switch(ent.type)
                             {
-                                gameG.DrawImage(bUpgrade, Tiles.GetTilePointForUpgrade(ent.PositionX, ent.PositionY, i));
-                            }
+                                case EntType.jp_house_lg:
+                                case EntType.jp_clc_min:
+                                case EntType.jp_snd_mkr:
+                                case EntType.jp_bmb_frm:
+                                case EntType.jp_irn_frg:
+                                    for (int i = 0; i < ent.level; i++)
+                                    {
+                                        gameG.DrawImage(bUpgradeLarge, Tiles.GetTilePointForUpgrade(ent.PositionX, ent.PositionY, i + 1));
+                                    }
+                                    break;
+                                case EntType.jp_house_md:
+                                    for (int i = 0; i < ent.level; i++)
+                                    {
+                                        gameG.DrawImage(bUpgradeMedium, Tiles.GetTilePointForUpgrade(ent.PositionX, ent.PositionY, i + 1));
+                                    }
+                                    break;
+                                case EntType.jp_house_sm:
+                                    for (int i = 0; i < ent.level; i++)
+                                    {
+                                        gameG.DrawImage(bUpgradeSmall, Tiles.GetTilePointForUpgrade(ent.PositionX, ent.PositionY, i + 1));
+                                    }
+                                    break;
+                            } 
                         }
                     }
                     /*
@@ -492,7 +515,6 @@ namespace PGJ002
                     */
                     //gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
                     gameG.DrawImage(bBambooWallFG, new Rectangle(0, 0, 800, 600));
-                    gameG.DrawImage(backtomenubutton, backtomenubuttonrect);
                     if (currentDisaster != Disaster.None)
                     {
                         switch (currentDisaster)
@@ -593,6 +615,7 @@ namespace PGJ002
                 }
                 var gameRect = new Rectangle(0, 0, __width, __height);
                 e.Graphics.DrawImage(gameB, gameRect);
+                e.Graphics.DrawImage(backtomenubutton, backtomenubuttonrect);
             }
         }
 
@@ -629,7 +652,9 @@ namespace PGJ002
             bBambooFarmer = FileSystem.GetAnimSpriteFromFiles("game/jp_bmb_frm", 4);
             bCalciumMine = FileSystem.GetAnimSpriteFromFiles("game/jp_clc_min", 4);
             bIronForge = FileSystem.GetAnimSpriteFromFiles("game/jp_irn_frg", 4);
-            bUpgrade = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_rsc_flr"));
+            bUpgradeLarge = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_rsc_flr"));
+            bUpgradeMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_md_flr"));
+            bUpgradeSmall = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_sm_flr"));
 
             bHouseLarge = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_lg"));
             bHouseMedium = new Bitmap(FileSystem.GetBitmapFromFile("game/jp_house_md"));

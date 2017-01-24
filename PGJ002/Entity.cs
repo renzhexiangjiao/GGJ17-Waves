@@ -33,7 +33,7 @@ namespace PGJ002
                 int r = 0;
                 foreach (Entity ent in Entity.entList)
                 {
-                    r += ent.adds_to_population + 0*ent.level;
+                    r += ent.adds_to_population * (ent.level + 2);
                 }
                 return r;
             }
@@ -170,25 +170,31 @@ namespace PGJ002
                     health = 150;
                     maxhealth = 150;
                     require_population = 2;
+                    adds_to_population = 0;
                     break;
                 case EntType.jp_house_sm:
                     health = 75;
                     maxhealth = 75;
-                    adds_to_population = 2;
+                    adds_to_population = 1;
+                    require_population = 0;
                     break;
                 case EntType.jp_house_md:
                     health = 150;
                     maxhealth = 150;
-                    adds_to_population = 4;
+                    adds_to_population = 2;
+                    require_population = 0;
                     break;
                 case EntType.jp_house_lg:
                     health = 200;
                     maxhealth = 200;
-                    adds_to_population = 8;
+                    adds_to_population = 4;
+                    require_population = 0;
                     break;
                 default:
                     health = 100;
                     maxhealth = 100;
+                    adds_to_population = 0;
+                    require_population = 0;
                     break;
             }
 
