@@ -44,15 +44,27 @@ namespace PGJ002
             __cash += population * 4;
         }
 
-        public static void Pay(Cost cost)
+        public static bool Pay(Cost cost)
         {
             if (!MainForm.GodModeOn)
             {
-                __cash -= cost.cash_cost;
-                __bamboo -= cost.bamboo_cost;
-                __sand -= cost.sand_cost;
-                __limestone -= cost.limestone_cost;
-                __iron -= cost.iron_cost;
+                if (cost.cash_cost <= cash && cost.bamboo_cost <= bamboo && cost.sand_cost <= sand && cost.limestone_cost <= limestone && cost.iron_cost <= iron)
+                {
+                    __cash -= cost.cash_cost;
+                    __bamboo -= cost.bamboo_cost;
+                    __sand -= cost.sand_cost;
+                    __limestone -= cost.limestone_cost;
+                    __iron -= cost.iron_cost;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
             }
         }
 

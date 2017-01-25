@@ -78,22 +78,22 @@ namespace PGJ002
             ent = new Entity(type);
             ent.PositionX = x;
             ent.PositionY = y;
-            Resources.Pay(ent.cost);
-            entList.Add(ent);
+            if(Resources.Pay(ent.cost))
+                entList.Add(ent);
             return entList.Count;
         }
 
         public static void RepairEntity(Entity ent)
         {
-            ent.health += 20;
+            if (Resources.Pay(new Cost(0, 60, 60, 60, 60)))
+                ent.health += 20;
             ent.health = Math.Min(ent.health, ent.maxhealth);
-            Resources.Pay(new Cost(0, 60, 60, 60, 60));
         }
 
         public static void UpgradeEntity(Entity ent)
         {
-            ent.level++;
-            Resources.Pay(ent.cost.halved);
+            if (Resources.Pay(ent.cost.halved))
+                ent.level++;
         }
         public Entity(EntType type)
         {
