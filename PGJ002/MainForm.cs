@@ -72,7 +72,8 @@ namespace PGJ002
         public static Bitmap bGrassBG;
 
         public static int width = Screen.PrimaryScreen.Bounds.Width, height = Screen.PrimaryScreen.Bounds.Height;
-        public static bool fullscreenOn = false;
+
+        public static bool GodModeOn;
 
         public static int nextDisaster;
 
@@ -138,8 +139,6 @@ namespace PGJ002
         public static Timer gameTimer = new Timer();
         public static Timer animTimer = new Timer();
         public static Timer menuTimer = new Timer();
-        public static int counter;
-        public static string timer;
 
         private void PlayClick()
         {
@@ -156,6 +155,7 @@ namespace PGJ002
                 {
                     menu = false;
                     ingame = true;
+                    GodModeOn = false;
                     PlayClick();
                     Random r = new Random();
                     if (r.Next(100) >= 50)
@@ -222,6 +222,7 @@ namespace PGJ002
                 {
                     ingame = false;
                     menu = true;
+                    GodModeOn = false;
                     PlayClick();
                     Music.SetMusic("menu_sound_2_proper");
                     gameTimer.Stop();
@@ -247,15 +248,15 @@ namespace PGJ002
                         }
                     }
                 }
-                if (isCursorOnTile && Entity.population != 0)
+                if (isCursorOnTile && Resources.population != 0)
                 {
                     if (currentMode == Mode.Build && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) == null)
                     {
-                        Entity.CreateEntity(currentSelection, tX, tY);
+                        Entity.BuildEntity(currentSelection, tX, tY);
                     }
                     else if(currentMode == Mode.Upgrade && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).level++;
+                        Entity.UpgradeEntity(Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY));
                     }
                     else if (currentMode == Mode.Bulldoze && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null)
                     {
@@ -264,13 +265,7 @@ namespace PGJ002
                     }
                     else if (currentMode == Mode.Repair && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY) != null && Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health != Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).maxhealth)
                     {
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health += 20;
-                        Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health = Math.Min(Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).health, Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY).maxhealth);
-                        Entity.add_bamboo -= 60;
-                        Entity.add_calcium -= 60;
-                        Entity.add_sand -= 60;
-                        Entity.add_iron -= 60;
-                        Entity.add_cash -= 60;
+                        Entity.RepairEntity(Entity.entList.Find(x => x.PositionX == tX && x.PositionY == tY));
                     }
                 }
             }
@@ -323,7 +318,13 @@ namespace PGJ002
             {
                 if (e.KeyCode == Keys.Escape)
                     Entity.ResetWorld();
-                if (Entity.population != 0)
+                if (e.KeyCode == Keys.Q)
+                {
+                    GodModeOn = !GodModeOn;
+                    Entity.ResetWorld();
+                    this.Refresh();
+                }
+                if (Resources.population != 0)
                 {
                     if (e.KeyCode == Keys.Right)
                         currentSelection++;
@@ -515,20 +516,20 @@ namespace PGJ002
                     */
                     //gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 640, 480));
                     gameG.DrawImage(bBambooWallFG, new Rectangle(0, 0, 800, 600));
-                    if (currentDisaster != Disaster.None)
+                    if (Disaster.currentDisaster != Disaster.Type.None)
                     {
-                        switch (currentDisaster)
+                        switch (Disaster.currentDisaster)
                         {
-                            case Disaster.Earthquake:
+                            case Disaster.Type.Earthquake:
                                 gameG.DrawImage(bEarthquake.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
-                            case Disaster.Fire:
+                            case Disaster.Type.Fire:
                                 gameG.DrawImage(bFireWaves.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
-                            case Disaster.Water:
+                            case Disaster.Type.Water:
                                 gameG.DrawImage(bWaterWaves.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
-                            case Disaster.Wind:
+                            case Disaster.Type.Wind:
                                 gameG.DrawImage(bTornado.GetCurrentFrame(), new Rectangle(0, 0, 800, 600));
                                 break;
                         }
@@ -536,7 +537,7 @@ namespace PGJ002
                     //gameG.DrawString("+", new Font(FontFamily.GenericMonospace, 12.0f, FontStyle.Bold), new SolidBrush(Color.White), new Point(__gameCursorX, __gameCursorY));
                     if (Program.lang == Localization.Language.english)
                     {
-                        if (Entity.population == 0)
+                        if (Resources.population == 0)
                         {
                             gameG.DrawString("PRESS ESC TO RESTART", new Font(FontFamily.GenericMonospace,
                  16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
@@ -546,10 +547,10 @@ namespace PGJ002
                         gameG.DrawString("Current building: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                     12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
-                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n"+timer+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulation: " + Resources.population.ToString() + "\nCash: " + Resources.cash.ToString() + " YEN\nBamboo: " + Resources.bamboo.ToString() + " kg\nSand: " + Resources.sand.ToString() + " kg\nLimestone: " + Resources.limestone.ToString() + " kg\nIron: " + Resources.iron + " kg\n" + (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\nSelected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         else
-                            gameG.DrawString("\nPopulation: " + Entity.population.ToString() + "\nCash: " + Entity.cash.ToString() + " YEN\nBamboo: " + Entity.bamboo.ToString() + " kg\nSand: " + Entity.sand.ToString() + " kg\nLimestone: " + Entity.calcium.ToString() + " kg\nIron: " + Entity.iron + " kg\n"+timer+"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulation: " + Resources.population.ToString() + "\nCash: " + Resources.cash.ToString() + " YEN\nBamboo: " + Resources.bamboo.ToString() + " kg\nSand: " + Resources.sand.ToString() + " kg\nLimestone: " + Resources.limestone.ToString() + " kg\nIron: " + Resources.iron + " kg\n"+ (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nMode: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         if (selectedEnt != null && (useEyeTracker && !lockCursor))
                             gameG.DrawString("Selected building: " + Entity.GetNameForType(selectedEnt.type) + "\nHealth: " + selectedEnt.health.ToString() + "\nLevel: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
@@ -561,7 +562,7 @@ namespace PGJ002
                         }
                     } else if(Program.lang == Localization.Language.polish)
                     {
-                        if (Entity.population == 0)
+                        if (Resources.population == 0)
                         {
                             gameG.DrawString("WCIŚNIJ ESC ABY POWTÓRZYĆ", new Font(FontFamily.GenericMonospace,
                  16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
@@ -571,10 +572,10 @@ namespace PGJ002
                         gameG.DrawString("Obecny budynek: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
-                            gameG.DrawString("\nPopulacja: " + Entity.population.ToString() + "\nPieniądze: " + Entity.cash.ToString() + " YEN\nBambus: " + Entity.bamboo.ToString() + " kg\nPiasek: " + Entity.sand.ToString() + " kg\nWapień: " + Entity.calcium.ToString() + " kg\nŻelazo: " + Entity.iron + " kg\n" + timer + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\nWybrany budynek: " + Entity.GetNameForType(selectedEnt.type) + "\nWytrzymałość: " + selectedEnt.health.ToString() + "\nPoziom: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulacja: " + Resources.population.ToString() + "\nPieniądze: " + Resources.cash.ToString() + " YEN\nBambus: " + Resources.bamboo.ToString() + " kg\nPiasek: " + Resources.sand.ToString() + " kg\nWapień: " + Resources.limestone.ToString() + " kg\nŻelazo: " + Resources.iron + " kg\n" + (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\nWybrany budynek: " + Entity.GetNameForType(selectedEnt.type) + "\nWytrzymałość: " + selectedEnt.health.ToString() + "\nPoziom: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         else
-                            gameG.DrawString("\nPopulacja: " + Entity.population.ToString() + "\nPieniądze: " + Entity.cash.ToString() + " YEN\nBambus: " + Entity.bamboo.ToString() + " kg\nPiasek: " + Entity.sand.ToString() + " kg\nWapień: " + Entity.calcium.ToString() + " kg\nŻelazo: " + Entity.iron + " kg\n" + timer + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\nPopulacja: " + Resources.population.ToString() + "\nPieniądze: " + Resources.cash.ToString() + " YEN\nBambus: " + Resources.bamboo.ToString() + " kg\nPiasek: " + Resources.sand.ToString() + " kg\nWapień: " + Resources.limestone.ToString() + " kg\nŻelazo: " + Resources.iron + " kg\n" + (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTryb: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         if (selectedEnt != null && (useEyeTracker && !lockCursor))
                             gameG.DrawString("Wybrany budynek: " + Entity.GetNameForType(selectedEnt.type) + "\nWytrzymałość: " + selectedEnt.health.ToString() + "\nPoziom: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
@@ -587,7 +588,7 @@ namespace PGJ002
                     }
                     else if (Program.lang == Localization.Language.zhongwen) 
                     {
-                        if (Entity.population == 0)
+                        if (Resources.population == 0)
                         {
                             gameG.DrawString("\u6309ESC\u91cd\u65b0\u5f00\u59cb", new Font(FontFamily.GenericMonospace,
                  16.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(300, 180));
@@ -597,10 +598,10 @@ namespace PGJ002
                         gameG.DrawString("\u5f53\u524d\u623f\u5b50: " + Entity.GetNameForType(currentSelection), new Font(FontFamily.GenericMonospace,
                 12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(110, 0));
                         if (selectedEnt != null && (!useEyeTracker || lockCursor))
-                            gameG.DrawString("\n\u4eba\u53e3: " + Entity.population.ToString() + "\n\u94B1: " + Entity.cash.ToString() + " YEN\n\u7AF9\u5B50: " + Entity.bamboo.ToString() + " kg\n\u6C99: " + Entity.sand.ToString() + " kg\n\u77F3\u7070\u5CA9: " + Entity.calcium.ToString() + " kg\n\u94C1: " + Entity.iron + " kg\n" + timer + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u6A21\u5F0F: " + Enum.GetName(typeof(Mode), currentMode) + "\n\u5165\u9009\u623f\u5b50: " + Entity.GetNameForType(selectedEnt.type) + "\n\u5065\u5EB7: " + selectedEnt.health.ToString() + "\n\u7EA7\u522B: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\n\u4eba\u53e3: " + Resources.population.ToString() + "\n\u94B1: " + Resources.cash.ToString() + " YEN\n\u7AF9\u5B50: " + Resources.bamboo.ToString() + " kg\n\u6C99: " + Resources.sand.ToString() + " kg\n\u77F3\u7070\u5CA9: " + Resources.limestone.ToString() + " kg\n\u94C1: " + Resources.iron + " kg\n" + (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u6A21\u5F0F: " + Enum.GetName(typeof(Mode), currentMode) + "\n\u5165\u9009\u623f\u5b50: " + Entity.GetNameForType(selectedEnt.type) + "\n\u5065\u5EB7: " + selectedEnt.health.ToString() + "\n\u7EA7\u522B: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         else
-                            gameG.DrawString("\n\u4eba\u53e3: " + Entity.population.ToString() + "\n\u94B1: " + Entity.cash.ToString() + " YEN\n\u7AF9\u5B50: " + Entity.bamboo.ToString() + " kg\n\u6C99: " + Entity.sand.ToString() + " kg\n\u77F3\u7070\u5CA9: " + Entity.calcium.ToString() + " kg\n\u94C1: " + Entity.iron + " kg\n" + timer + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u6A21\u5F0F: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
+                            gameG.DrawString("\n\u4eba\u53e3: " + Resources.population.ToString() + "\n\u94B1: " + Resources.cash.ToString() + " YEN\n\u7AF9\u5B50: " + Resources.bamboo.ToString() + " kg\n\u6C99: " + Resources.sand.ToString() + " kg\n\u77F3\u7070\u5CA9: " + Resources.limestone.ToString() + " kg\n\u94C1: " + Resources.iron + " kg\n" + (Disaster.nextDisasterIn % 20).ToString() + "\ngodmode: " + GodModeOn.ToString() + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u6A21\u5F0F: " + Enum.GetName(typeof(Mode), currentMode) + "\n", new Font(FontFamily.GenericMonospace,
                    12.0F, FontStyle.Bold), new SolidBrush(Color.White), new Point(0, 0));
                         if (selectedEnt != null && (useEyeTracker && !lockCursor))
                             gameG.DrawString("\u5165\u9009\u623f\u5b50: " + Entity.GetNameForType(selectedEnt.type) + "\n\u5065\u5EB7: " + selectedEnt.health.ToString() + "\n\u7EA7\u522B: " + (1 + selectedEnt.level).ToString(), new Font(FontFamily.GenericMonospace,
@@ -664,100 +665,15 @@ namespace PGJ002
             bBambooWall = new Bitmap(FileSystem.GetBitmapFromFile("game/BambooWall"));
             bBambooWallFG = new Bitmap(FileSystem.GetBitmapFromFile("game/BambooWall_fg"));
         }
-        public enum Disaster
-        {
-            None,
-            Water,
-            Fire,
-            Wind,
-            Earthquake
-        }
-        public Disaster currentDisaster = Disaster.None;
-        public Disaster nextDis;
-        public bool playedStinger = false;
-        public bool assignedNextDis = false;
         private void waveTimer_OnTick(object sender, EventArgs e)
         {
             fps = fc % prevfc;
             prevfc = fc;
-            counter++;
-            Random r = new Random();
-            timer = (nextDisaster-counter).ToString();
-            if (!assignedNextDis)
-            {
-                nextDis = (Disaster)r.Next((int)Disaster.None + 1, Enum.GetValues(typeof(Disaster)).Length);
-                assignedNextDis = true;
-            }
-            if(nextDisaster - counter <= 8 && nextDis == Disaster.Water && !playedStinger)
-            {
-                Sound.PlayASound("water_wave_sound_1");
-                playedStinger = true;
-            }
-            if (nextDisaster - counter <= 8 && nextDis == Disaster.Wind && !playedStinger)
-            {
-                Sound.PlayASound("wind_wave_sound_1");
-                playedStinger = true;
-            }
-            if (counter % nextDisaster == 0)
-            {
-                counter = 0;
-                nextDisaster = 20;
-                currentDisaster = nextDis;
-                assignedNextDis = false;
-                playedStinger = false;
-                for(int i = 0; i < Entity.entList.Count; i++)
-                {
-                    Entity ent = Entity.entList[i];
-                    ent.health -= r.Next(25, 75);
-                    if (ent.health < 0)
-                    {
-                        Entity.entList.Remove(ent);
-                        Sound.PlayASound("break_sound_1");
-                    }
-                }
-            }
-            int req_population = 0;
+            Disaster.Tick(sender, e);
+            Resources.CollectTaxes(Resources.population);
             foreach (Entity ent in Entity.entList)
             {
-                req_population += ent.require_population;
-            }
-            foreach (Entity ent in Entity.entList)
-            {
-                Entity.add_cash -= ent.cost;
-                ent.cost = 0;
-                Entity.add_bamboo -= ent.bamboo_cost;
-                ent.bamboo_cost = 0;
-                Entity.add_iron -= ent.iron_cost;
-                ent.iron_cost = 0;
-                Entity.add_sand -= ent.sand_cost;
-                ent.sand_cost = 0;
-                Entity.add_calcium -= ent.calcium_cost;
-                ent.calcium_cost = 0;
-                switch (ent.type)
-                {
-                    case EntType.jp_house_lg:
-                        Entity.add_cash += (int)((50 + 5 * ent.level));
-                        break;
-                    case EntType.jp_house_md:
-                        Entity.add_cash += (int)((20 + 2 * ent.level));
-                        break;
-                    case EntType.jp_house_sm:
-                        Entity.add_cash += (int)((10 + 1 * ent.level));
-                        break;
-
-                    case EntType.jp_bmb_frm:
-                        Entity.add_bamboo += (int)((25 + 7 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
-                        break;
-                    case EntType.jp_snd_mkr:
-                        Entity.add_sand += (int)((30 + 5 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
-                        break;
-                    case EntType.jp_irn_frg:
-                        Entity.add_iron += (int)((15 + 3 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
-                        break;
-                    case EntType.jp_clc_min:
-                        Entity.add_calcium += (int)((15 + 3 * ent.level) * (req_population > Entity.population ? (float)Entity.population / (float)req_population : 1));
-                        break;
-                }
+                Resources.Pay(new Cost(0, -ent.adds_to_bamboo, -ent.adds_to_sand, -ent.adds_to_calcium, -ent.adds_to_iron));
             }
             this.Refresh();
         }
@@ -772,35 +688,35 @@ namespace PGJ002
             bCalciumMine.AdvanceFrame();
             bIronForge.AdvanceFrame();
            
-            if (currentDisaster != Disaster.None)
+            if (Disaster.currentDisaster != Disaster.Type.None)
             {
-                switch (currentDisaster)
+                switch (Disaster.currentDisaster)
                 {
-                    case Disaster.Earthquake:
+                    case Disaster.Type.Earthquake:
                         if(bEarthquake.currentFrame == 4)
                         {
-                            currentDisaster = Disaster.None;
+                            Disaster.currentDisaster = Disaster.Type.None;
                         }
                         bEarthquake.AdvanceFrame();
                         break;
-                    case Disaster.Fire:
+                    case Disaster.Type.Fire:
                         if (bFireWaves.currentFrame == 3)
                         {
-                            currentDisaster = Disaster.None;
+                            Disaster.currentDisaster = Disaster.Type.None;
                         }
                         bFireWaves.AdvanceFrame();
                         break;
-                    case Disaster.Water:
+                    case Disaster.Type.Water:
                         if (bWaterWaves.currentFrame == 4)
                         {
-                            currentDisaster = Disaster.None;
+                            Disaster.currentDisaster = Disaster.Type.None;
                         }
                         bWaterWaves.AdvanceFrame();
                         break;
-                    case Disaster.Wind:
+                    case Disaster.Type.Wind:
                         if (bTornado.currentFrame == 4)
                         {
-                            currentDisaster = Disaster.None;
+                            Disaster.currentDisaster = Disaster.Type.None;
                         }
                         bTornado.AdvanceFrame();
                         break;

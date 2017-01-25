@@ -26,83 +26,6 @@ namespace PGJ002
     {
         // GLOBAL
         public static List<Entity> entList = new List<Entity>();
-        public static int population
-        {
-            get
-            {
-                int r = 0;
-                foreach (Entity ent in Entity.entList)
-                {
-                    r += ent.adds_to_population * (ent.level + 2);
-                }
-                return r;
-            }
-        }
-        public static int add_cash = 0;
-        public static int add_bamboo = 0;
-        public static int add_calcium = 0;
-        public static int add_iron = 0;
-        public static int add_sand = 0;
-        public static int cash
-        {
-            get
-            {
-                int r = 0;
-                foreach(Entity ent in Entity.entList)
-                {
-                    r += ent.cost + 50*ent.level;
-                }
-                return add_cash+1000-r;
-            }
-        }
-        public static int bamboo
-        {
-            get
-            {
-                int r = 0;
-                foreach (Entity ent in Entity.entList)
-                {
-                    r += ent.bamboo_cost + 100 * ent.level;
-                }
-                return add_bamboo + 1250 - r;
-            }
-        }
-        public static int sand
-        {
-            get
-            {
-                int r = 0;
-                foreach (Entity ent in Entity.entList)
-                {
-                    r += ent.sand_cost + 100 * ent.level;
-                }
-                return add_sand + 1500 - r;
-            }
-        }
-        public static int calcium
-        {
-            get
-            {
-                int r = 0;
-                foreach (Entity ent in Entity.entList)
-                {
-                    r += ent.calcium_cost + 75 * ent.level;
-                }
-                return add_calcium + 500 - r;
-            }
-        }
-        public static int iron
-        {
-            get
-            {
-                int r = 0;
-                foreach (Entity ent in Entity.entList)
-                {
-                    r += ent.iron_cost + 40 * ent.level;
-                }
-                return add_iron + 500 - r;
-            }
-        }
 
         // ENT-SPECIFIC
         public EntType type;
@@ -114,17 +37,13 @@ namespace PGJ002
         public bool isAnimated = false;
 
         // COST
-        public int cost = 0;
-        public int bamboo_cost = 0;
-        public int sand_cost = 0;
-        public int calcium_cost = 0;
-        public int iron_cost = 0;
+        public Cost cost = new Cost(0, 0, 0, 0, 0);
+
 
         public Bitmap sprite;
         public AnimatedSprite animSprite;
 
         // POPULATION
-        public int require_population = 0;
         public int adds_to_population = 0;
 
         // RESOURCES
@@ -136,14 +55,9 @@ namespace PGJ002
         public static void ResetWorld()
         {
             MainForm.nextDisaster = 20;
-            MainForm.counter = 0;
-            MainForm.timer = "20";
+            Disaster.nextDisasterIn = 20;
             entList.Clear();
-            add_bamboo = 0;
-            add_calcium = 0;
-            add_cash = 0;
-            add_iron = 0;
-            add_sand = 0;
+            Resources.Reset();
             CreateEntity(EntType.jp_house_sm, 1, 2);
         }
 
@@ -157,6 +71,30 @@ namespace PGJ002
             entList.Add(ent);
             return entList.Count;
         }
+
+        public static int BuildEntity(EntType type, int x, int y)
+        {
+            Entity ent;
+            ent = new Entity(type);
+            ent.PositionX = x;
+            ent.PositionY = y;
+            Resources.Pay(ent.cost);
+            entList.Add(ent);
+            return entList.Count;
+        }
+
+        public static void RepairEntity(Entity ent)
+        {
+            ent.health += 20;
+            ent.health = Math.Min(ent.health, ent.maxhealth);
+            Resources.Pay(new Cost(0, 60, 60, 60, 60));
+        }
+
+        public static void UpgradeEntity(Entity ent)
+        {
+            ent.level++;
+            Resources.Pay(ent.cost.halved);
+        }
         public Entity(EntType type)
         {
             this.type = type;
@@ -169,32 +107,27 @@ namespace PGJ002
                     isAnimated = true;
                     health = 150;
                     maxhealth = 150;
-                    require_population = 2;
                     adds_to_population = 0;
                     break;
                 case EntType.jp_house_sm:
                     health = 75;
                     maxhealth = 75;
                     adds_to_population = 1;
-                    require_population = 0;
                     break;
                 case EntType.jp_house_md:
                     health = 150;
                     maxhealth = 150;
                     adds_to_population = 2;
-                    require_population = 0;
                     break;
                 case EntType.jp_house_lg:
                     health = 200;
                     maxhealth = 200;
                     adds_to_population = 4;
-                    require_population = 0;
                     break;
                 default:
                     health = 100;
                     maxhealth = 100;
                     adds_to_population = 0;
-                    require_population = 0;
                     break;
             }
 
@@ -202,43 +135,34 @@ namespace PGJ002
             {
                 case EntType.jp_bmb_frm:
                     adds_to_bamboo = 25;
-                    cost = 200;
+                    cost = new Cost(200, 0, 0, 0, 0);
                     animSprite = MainForm.bBambooFarmer;
                     break;
                 case EntType.jp_clc_min:
                     adds_to_calcium = 15;
-                    cost = 200;
+                    cost = new Cost(200, 0, 0, 0, 0);
                     animSprite = MainForm.bCalciumMine;
                     break;
                 case EntType.jp_irn_frg:
                     adds_to_sand = 15;
-                    cost = 200;
+                    cost = new Cost(200, 0, 0, 0, 0);
                     animSprite = MainForm.bIronForge;
                     break;
                 case EntType.jp_snd_mkr:
                     adds_to_sand = 30;
-                    cost = 200;
+                    cost = new Cost(200, 0, 0, 0, 0);
                     animSprite = MainForm.bSandMaker;
                     break;
                 case EntType.jp_house_lg:
-                    bamboo_cost = 800;
-                    iron_cost = 275;
-                    calcium_cost = 180;
-                    sand_cost = 90;
+                    cost = new Cost(0, 800, 275, 180, 90);
                     sprite = MainForm.bHouseLarge;
                     break;
                 case EntType.jp_house_md:
-                    bamboo_cost = 500;
-                    iron_cost = 150;
-                    calcium_cost = 120;
-                    sand_cost = 40;
+                    cost = new Cost(0, 500, 150, 120, 40);
                     sprite = MainForm.bHouseMedium;
                     break;
                 case EntType.jp_house_sm:
-                    bamboo_cost = 300;
-                    iron_cost = 80;
-                    calcium_cost = 80;
-                    sand_cost = 10;
+                    cost = new Cost(0, 300, 8, 80, 10);
                     sprite = MainForm.bHouseSmall;
                     break;
             }
@@ -307,7 +231,7 @@ namespace PGJ002
                 switch (type)
                 {
                     case EntType.jp_bmb_frm:
-                        n = "\u7530\u7AF9\u5B50";
+                        n = "\u7AF9\u5B50\u7530";
                         break;
                     case EntType.jp_clc_min:
                         n = "\u77F3\u7070\u5CA9\u77FF";
