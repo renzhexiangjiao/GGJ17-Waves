@@ -56,7 +56,7 @@ namespace PGJ002
             {
                 res = new Bitmap("sprites/" + filename + "_"+ Enum.GetName(typeof(Localization.Language), Program.lang) +".png");
             }
-            catch (Exception ex)
+            catch
             {
                 try
                 {

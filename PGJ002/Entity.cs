@@ -54,8 +54,9 @@ namespace PGJ002
 
         public static void ResetWorld()
         {
-            MainForm.nextDisaster = 20;
             Disaster.nextDisasterIn = 20;
+            MainForm.currentMode = MainForm.Mode.Build;
+            MainForm.currentSelection = EntType.jp_house_sm;
             entList.Clear();
             Resources.Reset();
             CreateEntity(EntType.jp_house_sm, 1, 2);
@@ -94,6 +95,7 @@ namespace PGJ002
         {
             if (Resources.Pay(ent.cost.halved))
                 ent.level++;
+
         }
         public Entity(EntType type)
         {
@@ -144,7 +146,7 @@ namespace PGJ002
                     animSprite = MainForm.bCalciumMine;
                     break;
                 case EntType.jp_irn_frg:
-                    adds_to_sand = 15;
+                    adds_to_iron = 15;
                     cost = new Cost(200, 0, 0, 0, 0);
                     animSprite = MainForm.bIronForge;
                     break;

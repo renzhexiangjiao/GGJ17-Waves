@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Disaster.cs" />
+    <Compile Include="Fonts.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="FileSystem.cs" />
