@@ -8,11 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Media;
+#if __USE_EYETRACKER
 using EyeXFramework;
 using EyeXFramework.Forms;
+
 using Tobii.EyeX.Client;
 using Tobii.EyeX.Framework;
-
+#endif
 namespace PGJ002
 {
     public partial class MainForm : Form
@@ -46,9 +48,9 @@ namespace PGJ002
         public static Rectangle startbuttonrect, optionsbuttonrect, quitbuttonrect;
         public static Rectangle resolutionlabelrect, resolutionoptionsrect, languagelabelrect, languageoptionsrect, backbuttonrect;
         public static Rectangle backtomenubuttonrect;
-
+#if __USE_EYETRACKER
         public static FormsEyeXHost _eyeXHost = new FormsEyeXHost();
-
+#endif
         // GRA
         public static AnimatedSprite bWaterWaves;
         public static AnimatedSprite bFireWaves;
@@ -91,7 +93,9 @@ namespace PGJ002
         }
 
         public static bool useEyeTracker;
+#if __USE_EYETRACKER
         GazePointDataStream lightlyFilteredGazeDataStream = _eyeXHost.CreateGazePointDataStream(GazePointDataMode.LightlyFiltered);
+#endif
         public static double eyeTrackerX;
         public static double eyeTrackerY;
 
@@ -145,7 +149,11 @@ namespace PGJ002
 
         private void Form1_Click(object sender, EventArgs e)
         {
+#if __USE_EYETRACKER
             useEyeTracker = (sender as string == "eyetracker" ? true : false);
+#else
+            useEyeTracker = false;
+#endif
 
             if (menu == true)
             {
@@ -276,8 +284,10 @@ namespace PGJ002
             this.Location = new Point(0, 0);
             this.Width = 800;
             this.Height = 600;
+#if __USE_EYETRACKER
             _eyeXHost.Start();
             lightlyFilteredGazeDataStream.Next += (s, e) => { eyeTrackerX = e.X; eyeTrackerY = e.Y; };
+#endif
             Fonts.AddFonts();
             RefreshAssets();
             this.KeyDown += MainForm_KeyDown;

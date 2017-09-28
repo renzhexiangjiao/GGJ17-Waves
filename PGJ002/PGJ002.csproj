@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EyeXFramework">
-      <HintPath>..\..\..\..\Downloads\TobiiEyeXSdk-DotNet-1.7.489\lib\x86\EyeXFramework.dll</HintPath>
+      <HintPath>.\EyeXFramework.dll</HintPath>
     </Reference>
     <Reference Include="NAudio, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.8.0\lib\net35\NAudio.dll</HintPath>
@@ -55,29 +55,29 @@
     <Reference Include="System.Xml" />
     <Reference Include="Tobii.EyeX.Client.Net20, Version=1.7.489.0, Culture=neutral, PublicKeyToken=70326046dcdce6cb, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Downloads\TobiiEyeXSdk-DotNet-1.7.489\source\EyeXFramework\bin\x86\Debug\Tobii.EyeX.Client.Net20.dll</HintPath>
+      <HintPath>.\Tobii.EyeX.Client.Net20.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimatedSprite.cs" />
-    <Compile Include="Disaster.cs" />
-    <Compile Include="Fonts.cs" />
-    <Compile Include="Resources.cs" />
-    <Compile Include="Entity.cs" />
-    <Compile Include="FileSystem.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Client\AnimatedSprite.cs" />
+    <Compile Include="Game\Disaster.cs" />
+    <Compile Include="Client\Fonts.cs" />
+    <Compile Include="Client\Resources.cs" />
+    <Compile Include="Game\Entity.cs" />
+    <Compile Include="Client\FileSystem.cs" />
+    <Compile Include="Client\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Client\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Localization.cs" />
-    <Compile Include="Music.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Client\Localization.cs" />
+    <Compile Include="Client\Music.cs" />
+    <Compile Include="Client\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sound.cs" />
-    <Compile Include="Tiles.cs" />
-    <EmbeddedResource Include="MainForm.resx">
+    <Compile Include="Client\Sound.cs" />
+    <Compile Include="Game\Tiles.cs" />
+    <EmbeddedResource Include="Client\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -105,27 +105,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.png" />
+    <None Include="Resources\default.png" />
     <Content Include="credits.txt" />
-    <None Include="default.wav" />
+    <None Include="Resources\default.wav" />
     <Content Include="icon.ico" />
-    <Content Include="sprites\1024x768.png" />
-    <Content Include="sprites\1280x720.png" />
-    <Content Include="sprites\1366x768.png" />
-    <Content Include="sprites\800x600.png" />
-    <Content Include="sprites\english.png" />
-    <Content Include="sprites\h1.png" />
-    <Content Include="sprites\languagelabel.png" />
-    <Content Include="sprites\optionsbutton.png" />
-    <Content Include="sprites\polski.png" />
-    <Content Include="sprites\quitbutton.png" />
-    <Content Include="sprites\resolutionlabel.png" />
-    <Content Include="sprites\startbutton.png" />
-    <Content Include="sprites\zhongwen.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
